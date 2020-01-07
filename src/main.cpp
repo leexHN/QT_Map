@@ -2,11 +2,16 @@
 #include <QApplication>
 #include <gui/mainwindow.h>
 #include <thread>
+#include "Map.h"
 
 
 //std::thread bb;
 
 int main(int argc, char *argv[]) {
+    MapGen aa(3,4);
+    std::cout << aa;
+    aa.Reset(4,5);
+    std::cout << aa;
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
