@@ -11,8 +11,8 @@
 
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QMainWindow>
-#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -21,26 +21,21 @@ class Ui_MainWindow
 {
 public:
     QWidget *centralwidget;
-    QWidget *verticalLayoutWidget;
-    QVBoxLayout *verticalLayout;
+    QGridLayout *main_gridLayout;
 
     void setupUi(QMainWindow *MainWindow)
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(600, 600);
-        MainWindow->setMinimumSize(QSize(600, 600));
-        MainWindow->setMaximumSize(QSize(600, 600));
+        MainWindow->setMinimumSize(QSize(300, 300));
+        MainWindow->setMaximumSize(QSize(16777215, 16777215));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
-        centralwidget->setMinimumSize(QSize(600, 600));
-        centralwidget->setMaximumSize(QSize(600, 600));
-        verticalLayoutWidget = new QWidget(centralwidget);
-        verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-        verticalLayoutWidget->setGeometry(QRect(120, 150, 341, 411));
-        verticalLayout = new QVBoxLayout(verticalLayoutWidget);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        verticalLayout->setContentsMargins(0, 0, 0, 0);
+        centralwidget->setMinimumSize(QSize(300, 300));
+        centralwidget->setMaximumSize(QSize(16777215, 16777215));
+        main_gridLayout = new QGridLayout(centralwidget);
+        main_gridLayout->setObjectName(QString::fromUtf8("main_gridLayout"));
         MainWindow->setCentralWidget(centralwidget);
 
         retranslateUi(MainWindow);

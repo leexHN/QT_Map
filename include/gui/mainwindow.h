@@ -21,7 +21,6 @@ public:
     void ConvertToImg(const uchar* const data, int row = GNumRowMap, int col = GNumColMap);
     void ConvertToImg(const std::vector<uchar>& data, int row = GNumRowMap, int col = GNumColMap);
     void SetUpdateFrequency(uint hz);
-//    void timerEvent( QTimerEvent *event ) override;
     int MapH(){ return GNumRowMap;}
     int MapW(){ return GNumColMap;}
 
@@ -34,21 +33,22 @@ private:
     static const int GNumRowMap;
     static const int GNumColMap;
     mutable QMutex map_lock_;
-//    std::mutex map_lock_;
     ImageFrame *image_frame_;
     uint update_frequency_ = 30; // if 0 real time update
     int timer_id_ = 0;
     int timer_count_ = 0;
     S_Map map_;
 
+    void AdjustMainWindowsAccordingMap(uint width,uint height);
+
 protected:
     void timerEvent( QTimerEvent *event ) override;
 
 private slots:
-    void StopTimerSlot(int timer_id);
-    void TimerUpdate();
+
 signals:
     void StopTimerSig(int timer_id);
+    void delayed_update();
 
 };
 #endif // MAINWINDOW_H

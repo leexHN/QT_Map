@@ -53,7 +53,9 @@ void ImageFrame::paintEvent(QPaintEvent *event) {
         } else {
             QImage image = qimage_.scaled(contentsRect().width(), contentsRect().height(),
                                           Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            painter.drawImage(contentsRect(), image);
+            image.format() == QImage::Format_Indexed8 ?
+                painter.drawImage(contentsRect(), image.convertToFormat(QImage::Format_RGB32)) :
+                painter.drawImage(contentsRect(), image);
         }
     }
     qimage_mutex_.unlock();

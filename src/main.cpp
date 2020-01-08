@@ -2,19 +2,28 @@
 #include <QApplication>
 #include <gui/mainwindow.h>
 #include <thread>
+#include <include/Map.h>
+#include <zconf.h>
 #include "Map.h"
 
 
-//std::thread bb;
 
 int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    S_MapIMg img(3,3);
+    unsigned int row = 10,col = 12;
+    S_MapIMg img(row,col);
+    for(size_t i=0; i< row; i++){
+        for (size_t j = 0; j < col; ++j) {
+            for(int k=0;k<4;k++)
+                img.RemoveWall(i,j,(DIRECTION)k);
+        }
+    }
 //    img.FullArea(0,0,img.H()-1,img.W()-20);
     w.ConvertToImg(img.Bits(),img.H(),img.W());
 
+//    std::thread bb;
 //    auto func = [&w](){
 //        int j(100000);
 //        w.SetUpdateFrequency(2);
@@ -30,5 +39,19 @@ int main(int argc, char *argv[]) {
 //    bb = std::thread(func);
 //
 //    bb.detach();
+
+    std::thread MapGenTest;
+    auto MapGenTestFunc = [&w](){
+        MapGen generator(5,5);
+        do{
+            // draw image
+            w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
+            std::cout << "Time : " << generator.StepCount() << std::endl;
+            sleep(1);
+            generator.Step();
+        }while (!generator.IsFinish());
+    };
+    MapGenTest = std::thread(MapGenTestFunc);
+    MapGenTest.detach();
     return a.exec();
 }

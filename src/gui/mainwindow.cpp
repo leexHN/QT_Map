@@ -12,11 +12,11 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    connect(this, SIGNAL(StopTimerSig(int)),this,SLOT(StopTimerSlot(int)), Qt::DirectConnection);
+    connect(this, SIGNAL(delayed_update()), this, SLOT(update()), Qt::QueuedConnection);
     timer_id_ = startTimer(1);
     SetUpdateFrequency(update_frequency_);
 
-    auto verticalLayoutWidget = new QWidget(this);
+    auto verticalLayoutWidget = new QWidget(ui->centralwidget);
     verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
     verticalLayoutWidget->setGeometry(10,10,
             geometry().width()-20,geometry().height()-15);
@@ -24,6 +24,8 @@ MainWindow::MainWindow(QWidget *parent)
     auto verticalLayout = new QVBoxLayout(verticalLayoutWidget);
     verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
     verticalLayout->setContentsMargins(0, 0, 0, 0);
+
+    ui->main_gridLayout->addWidget(verticalLayoutWidget,0,0,Qt::AlignHCenter|Qt::AlignTop);
 
     image_frame_ = new ImageFrame(this);
     image_frame_->setGeometry(0,0,GNumRowMap + 10 ,GNumColMap + 10);
@@ -44,7 +46,6 @@ MainWindow::~MainWindow()
 {
     delete ui;
 }
-
 
 
 void MainWindow::ConvertToImg(const uchar *const data, int row, int col) {
@@ -70,14 +71,6 @@ void MainWindow::SetUpdateFrequency(uint hz) {
     timer_count_ = static_cast<int>(1000.f/update_frequency_);
 }
 
-void MainWindow::StopTimerSlot(int timer_id) {
-    killTimer(timer_id);
-}
-
-void MainWindow::TimerUpdate() {
-    image_frame_ -> setImage(map_.map_data_,map_.row,map_.col);
-}
-
 void MainWindow::timerEvent(QTimerEvent *event) {
     static int count = 0;
     if(event->timerId() == timer_id_){
@@ -90,4 +83,9 @@ void MainWindow::timerEvent(QTimerEvent *event) {
             }
         count++;
     }
+}
+
+void MainWindow::AdjustMainWindowsAccordingMap(uint width, uint height) {
+
+
 }

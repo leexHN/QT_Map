@@ -12,14 +12,14 @@
   </property>
   <property name="minimumSize">
    <size>
-    <width>600</width>
-    <height>600</height>
+    <width>300</width>
+    <height>300</height>
    </size>
   </property>
   <property name="maximumSize">
    <size>
-    <width>600</width>
-    <height>600</height>
+    <width>16777215</width>
+    <height>16777215</height>
    </size>
   </property>
   <property name="windowTitle">
@@ -28,27 +28,17 @@
   <widget class="QWidget" name="centralwidget">
    <property name="minimumSize">
     <size>
-     <width>600</width>
-     <height>600</height>
+     <width>300</width>
+     <height>300</height>
     </size>
    </property>
    <property name="maximumSize">
     <size>
-     <width>600</width>
-     <height>600</height>
+     <width>16777215</width>
+     <height>16777215</height>
     </size>
    </property>
-   <widget class="QWidget" name="verticalLayoutWidget">
-    <property name="geometry">
-     <rect>
-      <x>120</x>
-      <y>150</y>
-      <width>341</width>
-      <height>411</height>
-     </rect>
-    </property>
-    <layout class="QVBoxLayout" name="verticalLayout"/>
-   </widget>
+   <layout class="QGridLayout" name="main_gridLayout"/>
   </widget>
  </widget>
  <resources/>

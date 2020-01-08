@@ -69,6 +69,36 @@ void S_MapIMg::FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, uns
     FullArea(r1,c1,r1+h -1,c1+w -1,value);
 }
 
+void S_MapIMg::RemoveWall(unsigned int row, unsigned col, DIRECTION dir) {
+    unsigned int s_row,s_col; // space left top corner location of img
+    s_row = edge_pix_ + (space_pix_ + wal_pix_) * row;
+    s_col = edge_pix_ + (space_pix_ + wal_pix_) * col;
+    switch (dir){
+        case DIRECTION::L:
+            if(col == 0)
+                return;
+            FullAreaRef(s_row,s_col - wal_pix_,space_pix_,wal_pix_);
+            break;
+        case DIRECTION::U:
+            if(row == 0)
+                return;
+            FullAreaRef(s_row - wal_pix_, s_col, wal_pix_, space_pix_);
+            break;
+        case DIRECTION::R:
+            if(col >= map_col_ - 1)
+                return;
+            FullAreaRef(s_row, s_col + space_pix_, space_pix_, wal_pix_);
+            break;
+        case DIRECTION::D:
+            if(row >= map_row_ - 1)
+                return;
+            FullAreaRef(s_row + space_pix_, s_col,wal_pix_,space_pix_);
+            break;
+        default:
+            assert(false);
+    }
+}
+
 
 /*********************************************************************
  ** Class S_Map
@@ -84,7 +114,15 @@ std::ostream& operator << (std::ostream &os, const S_Map& rhs){
 void S_Map::Convert2D() {
     for (size_t i = 0; i < map_.size(); ++i) {
         for (size_t j = 0; j < map_[0].size(); ++j) {
-
+            auto map_cell = map_[i][j];
+            if(map_cell[DIRECTION::L] == 1)
+                map_img_.RemoveWall(i,j,DIRECTION::L);
+            if(map_cell[DIRECTION::U] == 1)
+                map_img_.RemoveWall(i,j,DIRECTION::U);
+            if(map_cell[DIRECTION::R] == 1)
+                map_img_.RemoveWall(i,j,DIRECTION::R);
+            if(map_cell[DIRECTION::D] == 1)
+                map_img_.RemoveWall(i,j,DIRECTION::D);
         }
     }
 }
@@ -109,7 +147,7 @@ void MapGen::Reset(int row, int col) {
 }
 
 void MapGen::Step() {
-    auto map = *map_pr_;
+    S_Map& map = *map_pr_.get();
     map(r_, c_, 4) = 1; // is visited
     std::vector<int> check;
 
@@ -159,7 +197,7 @@ void MapGen::Step() {
         }
     }
 
-
+    step_count_++;
 }
 
 void MapGen::_Reset(int row, int col) {

@@ -27,6 +27,8 @@ struct S_MapIMg{
     inline unsigned int H() const { return h_;}
 
     inline void Reset(unsigned int row,unsigned int col){
+        map_row_ = row;
+        map_col_ = col;
         edge_pix_ = (row + col) * 2;
         wal_pix_ = (row + col) * 4;
         space_pix_ = (row + col) * 6;
@@ -44,8 +46,14 @@ struct S_MapIMg{
     }
 
     uchar* Bits(){ return map_pr;}
+
+    /**
+     * @brief remove wall according the location of !!!S_MAP!!!(is not the loc of image)
+     */
+    void RemoveWall(unsigned int row, unsigned col, DIRECTION dir);
 private:
     uchar edge_pix_,wal_pix_, space_pix_;
+    unsigned int map_row_, map_col_;
     unsigned int row_,col_;
     unsigned int h_,w_;
     uchar * map_pr = nullptr;
@@ -53,8 +61,6 @@ private:
     inline uchar & I(unsigned int row, unsigned int col){
         return (*(this))(row, col);
     }
-
-public:
 
     /**
      * @brief Full an area using same @param value (c1,r1) top-left corner (r2,c2) bottom-right corner
@@ -64,7 +70,6 @@ public:
     void FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value = 255);
 
     void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space);
-
 };
 
 
@@ -94,8 +99,6 @@ struct S_Map{
         }
         map_2d_[1][0] = ' ';
         map_2d_[2*row - 1][2*col] = ' ';
-
-
     };
     ~S_Map() = default;
 
@@ -107,8 +110,10 @@ struct S_Map{
         return map_[row][col][check];
     }
 
+    S_MapIMg &MapImg(){ Convert2D(); return map_img_;}
+
     std::vector<std::vector<std::vector<bool>>> &Map(){ return map_;}
-    const std::vector<std::vector<std::string>> &Map2D(){return map_2d_;};
+    const std::vector<std::vector<std::string>> &MapStr(){return map_2d_;};
 private:
     const std::string cross, v_w, h_w, space; //v_w vertical wall
     std::vector<std::vector<std::vector<bool>>> map_;
