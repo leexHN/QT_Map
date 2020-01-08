@@ -27,6 +27,47 @@ inline void seed_rand()
 #endif
 };
 
+/*********************************************************************
+ ** Class S_MapImg
+ *********************************************************************/
+
+void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, uchar space) {
+    if(!map_pr)
+        delete map_pr;
+    edge_pix_ = edge;
+    wal_pix_ = wall;
+    space_pix_ = space;
+    row_ = row;
+    col_ = col;
+
+    h_ = 2*edge_pix_ + wal_pix_ * (row_ - 1) + row_ * space_pix_;
+    w_ = 2*edge_pix_ + wal_pix_ * (col_ - 1) + col_ * space_pix_;
+    map_pr = new uchar[h_*w_];
+
+    memset(map_pr, 0, h_*w_);
+
+    // Draw inlet and outlet
+    FullAreaRef(edge_pix_ ,0,space_pix_,edge_pix_);
+    FullAreaRef(h_ - edge_pix_ -space_pix_,w_ -edge_pix_,space_pix_,edge_pix_);
+    // Draw every space
+    auto DrawSpace = [this](unsigned int row, unsigned col){
+        FullAreaRef(row,col,space_pix_,space_pix_);
+    };
+    for (size_t r = edge_pix_;  r <= h_- edge_pix_ - space_pix_ ; r+= space_pix_+wal_pix_)
+        for(size_t c = edge_pix_; c <= w_- edge_pix_ - space_pix_; c+= space_pix_+wal_pix_)
+            DrawSpace(r,c);
+
+}
+
+void S_MapIMg::FullArea(unsigned int r1, unsigned int c1, unsigned int r2, unsigned int c2, uchar value) {
+    for(size_t r= r1; r <= r2; r++)
+        for(size_t c = c1; c <= c2; c++)
+            I(r, c) = value;
+}
+
+void S_MapIMg::FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value) {
+    FullArea(r1,c1,r1+h -1,c1+w -1,value);
+}
 
 
 /*********************************************************************
@@ -41,21 +82,11 @@ std::ostream& operator << (std::ostream &os, const S_Map& rhs){
 }
 
 void S_Map::Convert2D() {
-    std::string map_str;
-    std::stringstream ss;
+    for (size_t i = 0; i < map_.size(); ++i) {
+        for (size_t j = 0; j < map_[0].size(); ++j) {
 
-
-
-//    for (size_t i = 0; i < map_2d_.size(); i++) {
-//        for (size_t j = 0; j < map_2d_[i].size(); j++) {
-//            if(((i==0) + (i==map_2d_.size()-1) + (j==0) + (j==map_2d_[0].size()-1)) >= 2)
-//                ss << cross;
-//            if( (IsEven(i)) &&  (IsEven(j)) && map_2d_[i][j] == 0)
-//                ss << cross;
-//            else if()
-//
-//        }
-//    }
+        }
+    }
 }
 
 std::string S_Map::Convert2DStr() const {
@@ -140,3 +171,5 @@ void MapGen::_Reset(int row, int col) {
     map_pr_.reset(new S_Map(row, col));
     history_.push({r_,c_});
 }
+
+

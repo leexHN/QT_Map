@@ -8,21 +8,20 @@
 //std::thread bb;
 
 int main(int argc, char *argv[]) {
-    MapGen aa(3,4);
-    std::cout << aa;
-    aa.Reset(4,5);
-    std::cout << aa;
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
+    S_MapIMg img(3,3);
+//    img.FullArea(0,0,img.H()-1,img.W()-20);
+    w.ConvertToImg(img.Bits(),img.H(),img.W());
 
 //    auto func = [&w](){
 //        int j(100000);
 //        w.SetUpdateFrequency(2);
 //        while(j) {
 //            for (int i = 0; i < 256; ++i) {
-//                std::vector<uchar> tttt(400 * 400, i);
-//                w.ConvertToImg(tttt,400,400);
+//                std::vector<uchar> tttt(410 * 410, i);
+//                w.ConvertToImg(tttt,410,410);
 //            }
 //            j--;
 //        }

@@ -9,8 +9,63 @@
 #include <memory>
 #include <bits/shared_ptr.h>
 #include <stack>
+#include <string>
+#include <exception>
+#include <cstring>
 
 typedef unsigned char uchar;
+enum DIRECTION{L=0,U,R,D};
+
+struct S_MapIMg{
+    explicit S_MapIMg(unsigned int row, unsigned int col){
+        Reset(row,col);
+    };
+    ~S_MapIMg(){
+        delete map_pr;
+    }
+    inline unsigned int W() const { return w_;}
+    inline unsigned int H() const { return h_;}
+
+    inline void Reset(unsigned int row,unsigned int col){
+        edge_pix_ = (row + col) * 2;
+        wal_pix_ = (row + col) * 4;
+        space_pix_ = (row + col) * 6;
+        Init(row, col, wal_pix_, edge_pix_ , space_pix_);
+    }
+
+    void SetPix(uchar wall, uchar edge, uchar space){
+        Init(row_,col_,wall,edge,space);
+    }
+
+    inline uchar &operator() (unsigned int row, unsigned int col){
+        if(row >= h_ || col >= w_)
+            throw std::range_error("[S_MapIMg] : image index out of range!");
+        return map_pr[w_ * row + col];
+    }
+
+    uchar* Bits(){ return map_pr;}
+private:
+    uchar edge_pix_,wal_pix_, space_pix_;
+    unsigned int row_,col_;
+    unsigned int h_,w_;
+    uchar * map_pr = nullptr;
+
+    inline uchar & I(unsigned int row, unsigned int col){
+        return (*(this))(row, col);
+    }
+
+public:
+
+    /**
+     * @brief Full an area using same @param value (c1,r1) top-left corner (r2,c2) bottom-right corner
+     */
+    void FullArea(unsigned int r1, unsigned int c1, unsigned int r2, unsigned int c2, uchar value = 255);
+
+    void FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value = 255);
+
+    void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space);
+
+};
 
 
 // The array map_ is going to hold the array information for each cell.
@@ -18,9 +73,13 @@ typedef unsigned char uchar;
 // and the fifth indicates if the cell has been visited in the search.
 // map[row, col, (LEFT, UP, RIGHT, DOWN, CHECK_IF_VISITED)]
 struct S_Map{
+    typedef std::string str_t;
     explicit S_Map(int row, int col)
-    :map_(row,std::vector<std::vector<bool>>(col,std::vector<bool>(5, 0))),
-    map_2d_(row + row + 1,std::vector<char>(col + col + 1, ' ')){
+    : cross("+"), v_w("|"), h_w("--"), space("  "),
+      map_(row,std::vector<std::vector<bool>>(col,std::vector<bool>(5, 0))),
+      map_2d_(row + row + 1,std::vector<str_t>(col + col + 1, space)),
+      map_img_(row, col)
+    {
         for(size_t i=0; i<= 2*row ;i++){
             for(size_t j=0;j<= 2*col; j++){
                 if(!IsEven(i) && !IsEven(j))
@@ -35,6 +94,8 @@ struct S_Map{
         }
         map_2d_[1][0] = ' ';
         map_2d_[2*row - 1][2*col] = ' ';
+
+
     };
     ~S_Map() = default;
 
@@ -47,11 +108,12 @@ struct S_Map{
     }
 
     std::vector<std::vector<std::vector<bool>>> &Map(){ return map_;}
-    const std::vector<std::vector<char>> &Map2D(){return map_2d_;};
+    const std::vector<std::vector<std::string>> &Map2D(){return map_2d_;};
 private:
+    const std::string cross, v_w, h_w, space; //v_w vertical wall
     std::vector<std::vector<std::vector<bool>>> map_;
-    std::vector<std::vector<char>> map_2d_;
-    const char cross = '+', v_w = '|', h_w = '-', space = ' '; //v_w vertical wall
+    std::vector<std::vector<str_t>> map_2d_;
+    S_MapIMg map_img_;
 
     void Convert2D();
 
@@ -85,7 +147,6 @@ public:
     S_Map& Map(){ return *map_pr_;}
 
 private:
-    enum DIRECTION{L=0,U,R,D};
     std::shared_ptr<S_Map> map_pr_;
     int step_count_;
     int r_,c_;
