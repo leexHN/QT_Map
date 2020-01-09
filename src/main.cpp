@@ -12,16 +12,16 @@ int main(int argc, char *argv[]) {
     QApplication a(argc, argv);
     MainWindow w;
     w.show();
-    unsigned int row = 10,col = 12;
-    S_MapIMg img(row,col);
-    for(size_t i=0; i< row; i++){
-        for (size_t j = 0; j < col; ++j) {
-            for(int k=0;k<4;k++)
-                img.RemoveWall(i,j,(DIRECTION)k);
-        }
-    }
+//    unsigned int row = 300,col = 300;
+//    S_MapIMg img(row,col);
+//    for(size_t i=0; i< row; i++){
+//        for (size_t j = 0; j < col; ++j) {
+//            for(int k=0;k<4;k++)
+//                img.RemoveWall(i,j,(DIRECTION)k);
+//        }
+//    }
 //    img.FullArea(0,0,img.H()-1,img.W()-20);
-    w.ConvertToImg(img.Bits(),img.H(),img.W());
+//    w.ConvertToImg(img.Bits(),img.H(),img.W());
 
 //    std::thread bb;
 //    auto func = [&w](){
@@ -42,14 +42,15 @@ int main(int argc, char *argv[]) {
 
     std::thread MapGenTest;
     auto MapGenTestFunc = [&w](){
-        MapGen generator(5,5);
+        MapGen generator(150,150);
         do{
             // draw image
-            w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
+//            w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
             std::cout << "Time : " << generator.StepCount() << std::endl;
-            sleep(1);
+//            usleep(50000);
             generator.Step();
         }while (!generator.IsFinish());
+        w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
     };
     MapGenTest = std::thread(MapGenTestFunc);
     MapGenTest.detach();

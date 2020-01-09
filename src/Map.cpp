@@ -31,9 +31,14 @@ inline void seed_rand()
  ** Class S_MapImg
  *********************************************************************/
 
-void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, uchar space) {
+void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, uchar space,bool is_auto_adjust) {
     if(!map_pr)
         delete map_pr;
+    if(is_auto_adjust){
+        edge = edge >= 8 ? 8 :edge;
+        wall = wall >= 12 ? 12 :wall;
+        space = space >= 16 ? 16 :space;
+    }
     edge_pix_ = edge;
     wal_pix_ = wall;
     space_pix_ = space;

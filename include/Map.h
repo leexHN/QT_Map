@@ -36,7 +36,7 @@ struct S_MapIMg{
     }
 
     void SetPix(uchar wall, uchar edge, uchar space){
-        Init(row_,col_,wall,edge,space);
+        Init(row_,col_,wall,edge,space,false);
     }
 
     inline uchar &operator() (unsigned int row, unsigned int col){
@@ -69,7 +69,7 @@ private:
 
     void FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value = 255);
 
-    void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space);
+    void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space, bool is_auto_adjust = true);
 };
 
 
