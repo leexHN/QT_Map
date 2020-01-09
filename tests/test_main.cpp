@@ -57,7 +57,7 @@ TEST(S_MAP_IMG_TEST, set_all_space_grey){
 }
 
 int main(int argc, char** argv) {
-    testing::InitGoogleTest();
+    testing::InitGoogleTest(&argc,argv);
 
     QApplication a(argc, argv);
     MainWindow w;
