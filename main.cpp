@@ -2,7 +2,6 @@
 #include <QApplication>
 #include <gui/mainwindow.h>
 #include <thread>
-#include <include/Map.h>
 #include <zconf.h>
 #include "Map.h"
 

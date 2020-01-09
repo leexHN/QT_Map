@@ -104,6 +104,12 @@ void S_MapIMg::RemoveWall(unsigned int row, unsigned col, DIRECTION dir) {
     }
 }
 
+void S_MapIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
+    row = edge_pix_ + row * (space_pix_+wal_pix_);
+    col = edge_pix_ + col * (space_pix_+wal_pix_);
+    FullAreaRef(row,col,space_pix_,space_pix_,depth);
+}
+
 
 /*********************************************************************
  ** Class S_Map

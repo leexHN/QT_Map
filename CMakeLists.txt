@@ -10,6 +10,8 @@ set(CMAKE_AUTORCC ON)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
+set(ENABLE_TESTS ON)
+
 set(CMAKE_PREFIX_PATH "/home/lix/program/Qt/5.12.5/gcc_64/lib/cmake/")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
@@ -24,12 +26,18 @@ qt5_wrap_cpp(QT_MOCS ${QT_HEADERS})
 
 file(GLOB_RECURSE SRC "./src/*.cpp")
 
-find_package (Threads)
+find_package (Threads REQUIRED)
 
 add_executable(${PROJECT_NAME}
         ${SRC}
         ${QT_MOCS}
+        main.cpp
         )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets
         ${CMAKE_THREAD_LIBS_INIT})
+
+if(${ENABLE_TESTS})
+    MESSAGE(STATUS "ENABLE TESTS IS ON")
+    add_subdirectory(tests)
+endif()

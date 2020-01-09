@@ -51,6 +51,11 @@ struct S_MapIMg{
      * @brief remove wall according the location of !!!S_MAP!!!(is not the loc of image)
      */
     void RemoveWall(unsigned int row, unsigned col, DIRECTION dir);
+
+    /**
+     * @brief set space color according the location of !!!S_MAP!!!(is not the loc of image)
+     */
+    void ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth);
 private:
     uchar edge_pix_,wal_pix_, space_pix_;
     unsigned int map_row_, map_col_;
