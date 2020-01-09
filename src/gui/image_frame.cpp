@@ -44,19 +44,20 @@ void ImageFrame::paintEvent(QPaintEvent *event) {
     qimage_mutex_.lock();
     if (!qimage_.isNull())
     {
+        QImage painter_image;
         if (contentsRect().width() == qimage_.width()) {
-            if(qimage_.format() ==  QImage::Format_Indexed8){
-                QImage image = qimage_.convertToFormat(QImage::Format_RGB32);
-                painter.drawImage(contentsRect(), image);
-            }else
-                painter.drawImage(contentsRect(), qimage_);
+            if(qimage_.format() ==  QImage::Format_Indexed8)
+                painter_image = qimage_.convertToFormat(QImage::Format_RGB32);
+            else
+                painter_image = qimage_;
         } else {
-            QImage image = qimage_.scaled(contentsRect().width(), contentsRect().height(),
+            painter_image = qimage_.scaled(contentsRect().width(), contentsRect().height(),
                                           Qt::KeepAspectRatio, Qt::SmoothTransformation);
-            image.format() == QImage::Format_Indexed8 ?
-                painter.drawImage(contentsRect(), image.convertToFormat(QImage::Format_RGB32)) :
-                painter.drawImage(contentsRect(), image);
+            if(painter_image.format() ==  QImage::Format_Indexed8)
+                painter_image = painter_image.convertToFormat(QImage::Format_RGB32);
         }
+        painter.drawImage(
+                QRect(contentsRect().width() / 2 - painter_image.width() / 2,0,painter_image.width(),painter_image.height()),painter_image);
     }
     qimage_mutex_.unlock();
 }

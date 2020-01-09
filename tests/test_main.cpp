@@ -16,7 +16,7 @@ TEST(MapGenTest,test1){
     std::thread MapGenTest;
     auto MapGenTestFunc = [](){
         MainWindow & w = *pr_w;
-        MapGen generator(10,10);
+        MapGen generator(150,200);
         do{
             // draw image
             w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());

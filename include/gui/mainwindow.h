@@ -43,6 +43,7 @@ private:
 
 protected:
     void timerEvent( QTimerEvent *event ) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private slots:
 
