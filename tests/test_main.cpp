@@ -16,11 +16,29 @@ TEST(MapGenTest,test1){
     std::thread MapGenTest;
     auto MapGenTestFunc = [](){
         MainWindow & w = *pr_w;
-        MapGen generator(150,200);
+        MapGen generator(50,70);
         do{
             // draw image
             w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
             std::cout << "Time : " << generator.StepCount() << std::endl;
+            usleep(0);
+            generator.Step();
+        }while (!generator.IsFinish());
+        w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
+    };
+    MapGenTest = std::thread(MapGenTestFunc);
+    MapGenTest.detach();
+    SUCCEED();
+}
+
+TEST(MapGenTest,show_stack){
+    std::thread MapGenTest;
+    auto MapGenTestFunc = [](){
+        MainWindow & w = *pr_w;
+        MapGen generator(25,30);
+        do{
+            // draw image
+            w.ConvertToImg(generator.MapImgBits(true),generator.Map().MapImg().H(),generator.Map().MapImg().W());
             usleep(0);
             generator.Step();
         }while (!generator.IsFinish());
@@ -63,7 +81,6 @@ int main(int argc, char** argv) {
     MainWindow w;
     w.show();
     pr_w = &w;
-
     RUN_ALL_TESTS();
     return a.exec();
 }

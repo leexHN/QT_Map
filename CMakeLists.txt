@@ -16,6 +16,8 @@ set(CMAKE_PREFIX_PATH "/home/lix/program/Qt/5.12.5/gcc_64/lib/cmake/")
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
+find_package(Boost COMPONENTS signals REQUIRED)
+
 include_directories(include)
 
 file(GLOB QT_HEADERS "./include/gui/*.h")
@@ -31,6 +33,7 @@ find_package (Threads REQUIRED)
 add_executable(${PROJECT_NAME}
         ${SRC}
         ${QT_MOCS}
+        ${Boost_LIBRARIES}
         main.cpp
         )
 

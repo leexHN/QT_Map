@@ -36,7 +36,7 @@ void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, 
         delete map_pr;
     if(is_auto_adjust){
         edge = edge >= 8 ? 8 :edge;
-        wall = wall >= 12 ? 12 :wall;
+        wall = wall >= 10 ? 10 :wall;
         space = space >= 16 ? 16 :space;
     }
     edge_pix_ = edge;
@@ -107,6 +107,8 @@ void S_MapIMg::RemoveWall(unsigned int row, unsigned col, DIRECTION dir) {
 void S_MapIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
     row = edge_pix_ + row * (space_pix_+wal_pix_);
     col = edge_pix_ + col * (space_pix_+wal_pix_);
+    if(I(row,col) == depth)
+        return;
     FullAreaRef(row,col,space_pix_,space_pix_,depth);
 }
 
@@ -219,6 +221,25 @@ void MapGen::_Reset(int row, int col) {
     c_ = 0;
     map_pr_.reset(new S_Map(row, col));
     history_.push({r_,c_});
+}
+
+const uchar *MapGen::MapImgBits(bool is_show_stack) {
+    if(is_show_stack){
+        static std::stack<std::pair<int,int>> pre_history_ = history_;
+
+        if(pre_history_.size() > history_.size()){ //pop
+            auto temp = pre_history_.top();
+            map_pr_->MapImg().ChangeSpaceDepth(temp.first,temp.second,255);
+        }else if(pre_history_.size() < history_.size() ){ // push
+            uchar base_color = 170, top_color = 50;
+            const auto top = history_.top() , pre_top = pre_history_.top();
+            map_pr_->MapImg().ChangeSpaceDepth(top.first,top.second,top_color);
+            map_pr_->MapImg().ChangeSpaceDepth(pre_top.first,pre_top.second,base_color);
+        }
+        pre_history_ = history_;
+    }
+
+    return map_pr_->MapImg().Bits();
 }
 
 

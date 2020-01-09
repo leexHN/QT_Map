@@ -156,10 +156,12 @@ public:
 
     S_Map& Map(){ return *map_pr_;}
 
+    const uchar* MapImgBits(bool is_show_stack = false);
+
 private:
     std::shared_ptr<S_Map> map_pr_;
     int step_count_;
-    int r_,c_;
+    int r_,c_; // current process location
     int num_cols,num_rows;
     std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
 

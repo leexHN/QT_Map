@@ -21,8 +21,8 @@ public:
     void ConvertToImg(const uchar* const data, int row = GNumRowMap, int col = GNumColMap);
     void ConvertToImg(const std::vector<uchar>& data, int row = GNumRowMap, int col = GNumColMap);
     void SetUpdateFrequency(uint hz);
-    int MapH(){ return GNumRowMap;}
-    int MapW(){ return GNumColMap;}
+    int MapH(){ return image_frame_->height();}
+    int MapW(){ return image_frame_->width();}
 
 private:
     struct S_Map{
@@ -39,7 +39,6 @@ private:
     int timer_count_ = 0;
     S_Map map_;
 
-    void AdjustMainWindowsAccordingMap(uint width,uint height);
 
 protected:
     void timerEvent( QTimerEvent *event ) override;

@@ -17,23 +17,9 @@ MainWindow::MainWindow(QWidget *parent)
     timer_id_ = startTimer(1);
     SetUpdateFrequency(update_frequency_);
 
-//    auto verticalLayoutWidget = new QWidget(ui->centralwidget);
-//    verticalLayoutWidget->setObjectName(QString::fromUtf8("verticalLayoutWidget"));
-//    verticalLayoutWidget->setGeometry(10,10,
-//            geometry().width()-20,geometry().height()-15);
-
-//    auto verticalLayout = new QVBoxLayout(verticalLayoutWidget);
-//    verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-//    verticalLayout->setContentsMargins(0, 0, 0, 0);
-//
-//    ui->main_gridLayout->addWidget(verticalLayoutWidget,0,0,Qt::AlignHCenter|Qt::AlignTop);
-
     image_frame_ = new ImageFrame(this);
-//    image_frame_->setGeometry(0,0,GNumRowMap ,GNumColMap);
     image_frame_->setMinimumSize(QSize(GNumRowMap, GNumRowMap));
     ui->image_layout->addWidget(image_frame_,0,0);
-
-//    verticalLayout->addWidget(image_frame_,0,Qt::AlignHCenter|Qt::AlignTop);
 
     map_lock_.lock();
     map_.map_data_.reserve(GNumRowMap*GNumColMap);
@@ -88,10 +74,5 @@ void MainWindow::timerEvent(QTimerEvent *event) {
 }
 
 void MainWindow::paintEvent(QPaintEvent *event) {
-
-}
-
-void MainWindow::AdjustMainWindowsAccordingMap(uint width, uint height) {
-
 
 }

@@ -8,4 +8,5 @@ add_executable(TEST ${SRC} ${QT_MOCS} test_main.cpp)
 target_link_libraries(TEST
         PRIVATE Qt5::Widgets
         ${GTEST_BOTH_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT})
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_LIBRARIES})
