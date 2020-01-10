@@ -23,6 +23,8 @@ public:
     void SetUpdateFrequency(uint hz);
     int MapH(){ return image_frame_->height();}
     int MapW(){ return image_frame_->width();}
+    void SetTextBrowser(const QString &context);
+    void ResetIsRun(){is_run_ = false;}
 
 private:
     struct S_Map{
@@ -57,6 +59,7 @@ private slots:
 signals:
     void StopTimerSig(int timer_id);
     void delayed_update();
+    void textBrowserSig(const QString &text);
 
 };
 #endif // MAINWINDOW_H

@@ -31,7 +31,7 @@ void ImageFrame::setImage(const QImage &image) {
 
 void ImageFrame::setImage(const std::vector<uchar> &data, uint row,uint col) {
     qimage_mutex_.lock();
-    qimage_ = QImage(&data[0],col,row,col,QImage::Format_Indexed8);
+    qimage_ = QImage(&data[0],col,row,col,QImage::Format_Grayscale8);
     if(qimage_.bits()[0] != qimage_.bits()[col*row-1]){
 //        printf("!!!!!\n");
     }
@@ -57,7 +57,9 @@ void ImageFrame::paintEvent(QPaintEvent *event) {
                 painter_image = painter_image.convertToFormat(QImage::Format_RGB32);
         }
         painter.drawImage(
-                QRect(contentsRect().width() / 2 - painter_image.width() / 2,0,painter_image.width(),painter_image.height()),painter_image);
+                QRect(contentsRect().width() / 2 - painter_image.width() / 2,
+                      contentsRect().height() / 2 - painter_image.height() / 2,
+                        painter_image.width(),painter_image.height()),painter_image);
     }
     qimage_mutex_.unlock();
 }

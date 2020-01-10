@@ -179,7 +179,8 @@ void MapGen::Step() {
         r_ = temp.first;
         c_ = temp.second;
     }else{
-        history_.push({r_,c_});
+        if(r_!=0 || c_!= 0)
+            history_.push({r_,c_});
         int range = check.size(); // [0~ range)
         seed_rand();
         int index = rand()%range;
@@ -220,17 +221,19 @@ void MapGen::_Reset(int row, int col) {
     r_ = 0;
     c_ = 0;
     map_pr_.reset(new S_Map(row, col));
+    history_ =  std::stack<std::pair<int,int>>();
     history_.push({r_,c_});
+    pre_history_ = history_;
 }
 
 const uchar *MapGen::MapImgBits(bool is_show_stack) {
     if(is_show_stack){
-        static std::stack<std::pair<int,int>> pre_history_ = history_;
+//        static std::stack<std::pair<int,int>> pre_history_ = history_;
 
         if(pre_history_.size() > history_.size()){ //pop
             auto temp = pre_history_.top();
             map_pr_->MapImg().ChangeSpaceDepth(temp.first,temp.second,255);
-        }else if(pre_history_.size() < history_.size() ){ // push
+        }else if(pre_history_.size() < history_.size() && !pre_history_.empty()){ // push
             uchar base_color = 170, top_color = 50;
             const auto top = history_.top() , pre_top = pre_history_.top();
             map_pr_->MapImg().ChangeSpaceDepth(top.first,top.second,top_color);

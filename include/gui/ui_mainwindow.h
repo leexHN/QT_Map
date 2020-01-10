@@ -31,7 +31,6 @@ public:
     QGridLayout *main_gridLayout;
     QTextBrowser *textBrowser;
     QGridLayout *set_grid_layout;
-    QPushButton *reset_pushButton;
     QCheckBox *show_stack_checkBox;
     QPushButton *r_p_Button;
     QSpinBox *delay_time_spinBox;
@@ -41,6 +40,7 @@ public:
     QSpinBox *row_spinBox;
     QSpacerItem *horizontalSpacer;
     QSpinBox *col_spinBox;
+    QPushButton *reset_pushButton;
     QGridLayout *image_layout;
     QFrame *frame;
 
@@ -65,11 +65,6 @@ public:
 
         set_grid_layout = new QGridLayout();
         set_grid_layout->setObjectName(QString::fromUtf8("set_grid_layout"));
-        reset_pushButton = new QPushButton(centralwidget);
-        reset_pushButton->setObjectName(QString::fromUtf8("reset_pushButton"));
-
-        set_grid_layout->addWidget(reset_pushButton, 0, 9, 1, 1);
-
         show_stack_checkBox = new QCheckBox(centralwidget);
         show_stack_checkBox->setObjectName(QString::fromUtf8("show_stack_checkBox"));
 
@@ -121,6 +116,11 @@ public:
 
         set_grid_layout->addWidget(col_spinBox, 0, 3, 1, 1);
 
+        reset_pushButton = new QPushButton(centralwidget);
+        reset_pushButton->setObjectName(QString::fromUtf8("reset_pushButton"));
+
+        set_grid_layout->addWidget(reset_pushButton, 0, 4, 1, 1);
+
 
         main_gridLayout->addLayout(set_grid_layout, 1, 0, 1, 1);
 
@@ -151,14 +151,13 @@ public:
 "p, li { white-space: pre-wrap; }\n"
 "</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Runtime Status:</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">--------------------------</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", nullptr));
-        reset_pushButton->setText(QApplication::translate("MainWindow", "Reset", nullptr));
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">--------------------------</span></p></body></html>", nullptr));
         show_stack_checkBox->setText(QApplication::translate("MainWindow", "show stack", nullptr));
         r_p_Button->setText(QApplication::translate("MainWindow", "Run/Pause", nullptr));
         label->setText(QApplication::translate("MainWindow", "    col: ", nullptr));
         label_2->setText(QApplication::translate("MainWindow", "    row:  ", nullptr));
         label_3->setText(QApplication::translate("MainWindow", " delay time: ", nullptr));
+        reset_pushButton->setText(QApplication::translate("MainWindow", "Reset", nullptr));
     } // retranslateUi
 
 };

@@ -167,6 +167,7 @@ private:
     int r_,c_; // current process location
     int num_cols,num_rows;
     std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
+    std::stack<std::pair<int,int>> pre_history_;
 
     void _Reset(int row, int col);
 
