@@ -31,14 +31,16 @@ public:
     QGridLayout *main_gridLayout;
     QTextBrowser *textBrowser;
     QGridLayout *set_grid_layout;
-    QCheckBox *checkBox;
-    QPushButton *pushButton;
-    QSpinBox *spinBox;
-    QLabel *label_2;
-    QSpacerItem *horizontalSpacer;
+    QPushButton *reset_pushButton;
+    QCheckBox *show_stack_checkBox;
+    QPushButton *r_p_Button;
+    QSpinBox *delay_time_spinBox;
     QLabel *label;
-    QPushButton *pushButton_2;
-    QSpinBox *spinBox_2;
+    QLabel *label_2;
+    QLabel *label_3;
+    QSpinBox *row_spinBox;
+    QSpacerItem *horizontalSpacer;
+    QSpinBox *col_spinBox;
     QGridLayout *image_layout;
     QFrame *frame;
 
@@ -46,7 +48,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(600, 600);
+        MainWindow->resize(700, 700);
         MainWindow->setMinimumSize(QSize(600, 600));
         MainWindow->setMaximumSize(QSize(16777215, 16777215));
         centralwidget = new QWidget(MainWindow);
@@ -63,50 +65,61 @@ public:
 
         set_grid_layout = new QGridLayout();
         set_grid_layout->setObjectName(QString::fromUtf8("set_grid_layout"));
-        checkBox = new QCheckBox(centralwidget);
-        checkBox->setObjectName(QString::fromUtf8("checkBox"));
+        reset_pushButton = new QPushButton(centralwidget);
+        reset_pushButton->setObjectName(QString::fromUtf8("reset_pushButton"));
 
-        set_grid_layout->addWidget(checkBox, 0, 10, 1, 1);
+        set_grid_layout->addWidget(reset_pushButton, 0, 9, 1, 1);
 
-        pushButton = new QPushButton(centralwidget);
-        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        show_stack_checkBox = new QCheckBox(centralwidget);
+        show_stack_checkBox->setObjectName(QString::fromUtf8("show_stack_checkBox"));
 
-        set_grid_layout->addWidget(pushButton, 0, 8, 1, 1);
+        set_grid_layout->addWidget(show_stack_checkBox, 0, 12, 1, 1);
 
-        spinBox = new QSpinBox(centralwidget);
-        spinBox->setObjectName(QString::fromUtf8("spinBox"));
-        spinBox->setMinimum(2);
-        spinBox->setMaximum(500);
-        spinBox->setValue(10);
+        r_p_Button = new QPushButton(centralwidget);
+        r_p_Button->setObjectName(QString::fromUtf8("r_p_Button"));
 
-        set_grid_layout->addWidget(spinBox, 0, 1, 1, 1);
+        set_grid_layout->addWidget(r_p_Button, 0, 8, 1, 1);
 
-        label_2 = new QLabel(centralwidget);
-        label_2->setObjectName(QString::fromUtf8("label_2"));
+        delay_time_spinBox = new QSpinBox(centralwidget);
+        delay_time_spinBox->setObjectName(QString::fromUtf8("delay_time_spinBox"));
+        delay_time_spinBox->setMaximum(999);
 
-        set_grid_layout->addWidget(label_2, 0, 0, 1, 1);
-
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
-
-        set_grid_layout->addItem(horizontalSpacer, 0, 7, 1, 1);
+        set_grid_layout->addWidget(delay_time_spinBox, 0, 11, 1, 1);
 
         label = new QLabel(centralwidget);
         label->setObjectName(QString::fromUtf8("label"));
 
         set_grid_layout->addWidget(label, 0, 2, 1, 1);
 
-        pushButton_2 = new QPushButton(centralwidget);
-        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        label_2 = new QLabel(centralwidget);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
 
-        set_grid_layout->addWidget(pushButton_2, 0, 9, 1, 1);
+        set_grid_layout->addWidget(label_2, 0, 0, 1, 1);
 
-        spinBox_2 = new QSpinBox(centralwidget);
-        spinBox_2->setObjectName(QString::fromUtf8("spinBox_2"));
-        spinBox_2->setMinimum(2);
-        spinBox_2->setMaximum(500);
-        spinBox_2->setValue(10);
+        label_3 = new QLabel(centralwidget);
+        label_3->setObjectName(QString::fromUtf8("label_3"));
 
-        set_grid_layout->addWidget(spinBox_2, 0, 3, 1, 1);
+        set_grid_layout->addWidget(label_3, 0, 10, 1, 1);
+
+        row_spinBox = new QSpinBox(centralwidget);
+        row_spinBox->setObjectName(QString::fromUtf8("row_spinBox"));
+        row_spinBox->setMinimum(2);
+        row_spinBox->setMaximum(500);
+        row_spinBox->setValue(10);
+
+        set_grid_layout->addWidget(row_spinBox, 0, 1, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(20, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        set_grid_layout->addItem(horizontalSpacer, 0, 7, 1, 1);
+
+        col_spinBox = new QSpinBox(centralwidget);
+        col_spinBox->setObjectName(QString::fromUtf8("col_spinBox"));
+        col_spinBox->setMinimum(2);
+        col_spinBox->setMaximum(500);
+        col_spinBox->setValue(10);
+
+        set_grid_layout->addWidget(col_spinBox, 0, 3, 1, 1);
 
 
         main_gridLayout->addLayout(set_grid_layout, 1, 0, 1, 1);
@@ -139,35 +152,13 @@ public:
 "</style></head><body style=\" font-family:'Ubuntu'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:12pt; font-weight:600;\">Runtime Status:</span></p>\n"
 "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">--------------------------</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><"
-                        "span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\">"
-                        "<span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\""
-                        "><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:10pt;\">a</span></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:10pt;\"><br /></p>\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-bl"
-                        "ock-indent:0; text-indent:0px; font-size:10pt;\"><br /></p></body></html>", nullptr));
-        checkBox->setText(QApplication::translate("MainWindow", "show stack", nullptr));
-        pushButton->setText(QApplication::translate("MainWindow", "Run", nullptr));
-        label_2->setText(QApplication::translate("MainWindow", "    row:  ", nullptr));
+"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>", nullptr));
+        reset_pushButton->setText(QApplication::translate("MainWindow", "Reset", nullptr));
+        show_stack_checkBox->setText(QApplication::translate("MainWindow", "show stack", nullptr));
+        r_p_Button->setText(QApplication::translate("MainWindow", "Run/Pause", nullptr));
         label->setText(QApplication::translate("MainWindow", "    col: ", nullptr));
-        pushButton_2->setText(QApplication::translate("MainWindow", "Pause", nullptr));
+        label_2->setText(QApplication::translate("MainWindow", "    row:  ", nullptr));
+        label_3->setText(QApplication::translate("MainWindow", " delay time: ", nullptr));
     } // retranslateUi
 
 };

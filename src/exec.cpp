@@ -15,11 +15,13 @@ void Exec::MapProcessThread() {
         if(flags_.reset_row_col){
             map_generator_.Reset(row_,col_);
             flags_.reset_row_col = false;
+            flags_.start = false;
             continue;
         }
 
         if(flags_.start){
-            map_generator_.Step();
+            if(!map_generator_.IsFinish())
+                map_generator_.Step();
             if(flags_.show_stack)
                 win_.ConvertToImg(map_generator_.MapImgBits(true),
                                   (int)map_generator_.Map().MapImg().H(),(int)map_generator_.Map().MapImg().W());

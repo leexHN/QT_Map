@@ -38,6 +38,8 @@ private:
     int timer_id_ = 0;
     int timer_count_ = 0;
     S_Map map_;
+    int set_row_ = 10, set_col_=10;
+    bool is_run_ = false;
 
 
 protected:
@@ -45,6 +47,12 @@ protected:
     void paintEvent(QPaintEvent* event) override;
 
 private slots:
+    void SetRow(int row){set_row_ = row;};
+    void SetCol(int col){set_col_ = col;};
+    void ShowStack(int state);
+    void SetDelayTime(int time);
+    void RunOrPause();
+    void Reset();
 
 signals:
     void StopTimerSig(int timer_id);

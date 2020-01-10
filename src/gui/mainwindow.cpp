@@ -2,6 +2,7 @@
 #include "gui/ui_mainwindow.h"
 #include <algorithm>
 #include <iostream>
+#include "signals.h"
 
 
 const int MainWindow::GNumRowMap = 400;
@@ -14,6 +15,15 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
 
     connect(this, SIGNAL(delayed_update()), this, SLOT(update()), Qt::QueuedConnection);
+    connect(ui->row_spinBox,SIGNAL(valueChanged(int)), this, SLOT(SetRow(int)));
+    connect(ui->col_spinBox,SIGNAL(valueChanged(int)), this, SLOT(SetCol(int)));
+    connect(ui->delay_time_spinBox,SIGNAL(valueChanged(int)),this, SLOT(SetDelayTime(int)));
+    connect(ui->show_stack_checkBox,SIGNAL(stateChanged(int)),this,SLOT(ShowStack(int)));
+
+    connect(ui->r_p_Button,SIGNAL(pressed()), this, SLOT(RunOrPause()));
+    connect(ui->reset_pushButton,SIGNAL(pressed()), this, SLOT(Reset()));
+
+
     timer_id_ = startTimer(1);
     SetUpdateFrequency(update_frequency_);
 
@@ -76,3 +86,21 @@ void MainWindow::timerEvent(QTimerEvent *event) {
 void MainWindow::paintEvent(QPaintEvent *event) {
 
 }
+
+void MainWindow::SetDelayTime(int time){
+    G_SetDelayTimeSig(time);
+}
+
+void MainWindow::RunOrPause() {
+    is_run_ = !is_run_;
+    is_run_?G_RunSig(true):G_RunSig(false);
+}
+
+void MainWindow::Reset() {
+    is_run_ = false;
+    G_SetRowColSig(set_row_,set_col_);
+}
+
+void MainWindow::ShowStack(int state){
+    G_IsShowStackSig(state == Qt::Checked);
+};

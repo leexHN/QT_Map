@@ -30,7 +30,7 @@ public:
         win_.ConvertToImg(map_generator_.Map().MapImg().Bits(),
                 map_generator_.Map().MapImg().H(),map_generator_.Map().MapImg().W());
         //run map process thread
-        flags_.run_status = false;
+        flags_.run_status = true;
         map_process_thread_ = std::thread([this](){MapProcessThread();});
     };
 
@@ -53,6 +53,7 @@ public:
     inline void Start(bool flag){flags_.start = flag;}
 
     inline void SetDelayTime(int ms){delay_time_ = ms;}
+
 private:
     struct S_Flags{
         bool start = false;// true start false pause

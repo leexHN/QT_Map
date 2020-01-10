@@ -38,7 +38,8 @@ add_executable(${PROJECT_NAME}
         )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets
-        ${CMAKE_THREAD_LIBS_INIT})
+        ${CMAKE_THREAD_LIBS_INIT}
+        ${Boost_LIBRARIES})
 
 if(${ENABLE_TESTS})
     MESSAGE(STATUS "ENABLE TESTS IS ON")

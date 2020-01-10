@@ -75,6 +75,9 @@ private:
     void FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value = 255);
 
     void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space, bool is_auto_adjust = true);
+
+    S_MapIMg& operator = (const S_MapIMg&); // prohibit copy or assigment
+    S_MapIMg(const S_MapIMg&);
 };
 
 
