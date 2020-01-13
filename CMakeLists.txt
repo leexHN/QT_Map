@@ -6,17 +6,27 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-set(ENABLE_TESTS ON)
+set(ENABLE_TESTS OFF)
 
-set(CMAKE_PREFIX_PATH "/home/lix/program/Qt/5.12.5/gcc_64/lib/cmake/")
+IF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+    MESSAGE(STATUS "current platform: Linux ")
+    set(CMAKE_PREFIX_PATH "/home/lix/program/Qt/5.12.5/gcc_64/lib/cmake/")
+    find_package(Boost COMPONENTS signals REQUIRED)
+ELSEIF (CMAKE_SYSTEM_NAME MATCHES "Windows")
+    MESSAGE(STATUS "current platform: Windows")
+    set(BOOST_ROOT "D:\\cpp_libs\\boost_1_70_0_build")
+    find_package(Boost REQUIRED)
+    include_directories(${Boost_INCLUDE_DIR})
+    set(CMAKE_PREFIX_PATH "D:\\QT\\5.12.6\\msvc2017_64\\lib\\cmake")
+ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
+
 
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
-
-find_package(Boost COMPONENTS signals REQUIRED)
 
 include_directories(include)
 
@@ -35,6 +45,7 @@ add_executable(${PROJECT_NAME}
         ${QT_MOCS}
         ${Boost_LIBRARIES}
         main.cpp
+        ./src/gui/mainwindow.ui
         )
 
 target_link_libraries(${PROJECT_NAME} PRIVATE Qt5::Widgets

@@ -6,7 +6,11 @@
 #include <QApplication>
 #include <gui/mainwindow.h>
 #include <thread>
+#if !defined(_WIN32)
 #include <zconf.h>
+#else
+#include<Windows.h>
+#endif
 #include "Map.h"
 
 
@@ -21,7 +25,6 @@ TEST(MapGenTest,test1){
             // draw image
             w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
             std::cout << "Time : " << generator.StepCount() << std::endl;
-            usleep(0);
             generator.Step();
         }while (!generator.IsFinish());
         w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
@@ -39,7 +42,6 @@ TEST(MapGenTest,show_stack){
         do{
             // draw image
             w.ConvertToImg(generator.MapImgBits(true),generator.Map().MapImg().H(),generator.Map().MapImg().W());
-            usleep(0);
             generator.Step();
         }while (!generator.IsFinish());
         w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());

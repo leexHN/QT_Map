@@ -5,6 +5,9 @@
 #include <set>
 #if !defined(_WIN32)
 #include <sys/time.h>
+#else
+#include <Windows.h>
+#include <time.h>
 #endif
 #include "Map.h"
 #include "iostream"
@@ -23,9 +26,9 @@ inline void seed_rand()
     gettimeofday(&temp_time_struct,NULL);
     srand(temp_time_struct.tv_usec);
 #else
-    srand(time(nullptr));
+    srand((unsigned)time(NULL));
 #endif
-};
+}
 
 /*********************************************************************
  ** Class S_MapImg
@@ -55,7 +58,7 @@ void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, 
     FullAreaRef(edge_pix_ ,0,space_pix_,edge_pix_);
     FullAreaRef(h_ - edge_pix_ -space_pix_,w_ -edge_pix_,space_pix_,edge_pix_);
     // Draw every space
-    auto DrawSpace = [this](unsigned int row, unsigned col){
+    auto DrawSpace = [this](size_t row, size_t col){
         FullAreaRef(row,col,space_pix_,space_pix_);
     };
     for (size_t r = edge_pix_;  r <= h_- edge_pix_ - space_pix_ ; r+= space_pix_+wal_pix_)
@@ -64,18 +67,18 @@ void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, 
 
 }
 
-void S_MapIMg::FullArea(unsigned int r1, unsigned int c1, unsigned int r2, unsigned int c2, uchar value) {
+void S_MapIMg::FullArea(size_t r1, size_t c1, size_t r2, size_t c2, uchar value) {
     for(size_t r= r1; r <= r2; r++)
         for(size_t c = c1; c <= c2; c++)
             I(r, c) = value;
 }
 
-void S_MapIMg::FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value) {
+void S_MapIMg::FullAreaRef(size_t r1, size_t c1, unsigned int h, unsigned int w, uchar value) {
     FullArea(r1,c1,r1+h -1,c1+w -1,value);
 }
 
-void S_MapIMg::RemoveWall(unsigned int row, unsigned col, DIRECTION dir) {
-    unsigned int s_row,s_col; // space left top corner location of img
+void S_MapIMg::RemoveWall(size_t row, size_t col, DIRECTION dir) {
+    size_t s_row,s_col; // space left top corner location of img
     s_row = edge_pix_ + (space_pix_ + wal_pix_) * row;
     s_col = edge_pix_ + (space_pix_ + wal_pix_) * col;
     switch (dir){
@@ -181,8 +184,8 @@ void MapGen::Step() {
     }else{
         if(r_!=0 || c_!= 0)
             history_.push({r_,c_});
-        int range = check.size(); // [0~ range)
-        seed_rand();
+        size_t range = check.size(); // [0~ range)
+        //seed_rand();
         int index = rand()%range;
         auto move_direction = check[index];
         switch (move_direction){
@@ -215,6 +218,7 @@ void MapGen::Step() {
 }
 
 void MapGen::_Reset(int row, int col) {
+    seed_rand();
     step_count_ = 0;
     num_rows = row;
     num_cols = col;

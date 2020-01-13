@@ -30,7 +30,11 @@ void Exec::MapProcessThread() {
                 else
                     win_.ConvertToImg(map_generator_.MapImgBits(),
                                       (int)map_generator_.Map().MapImg().H(),(int)map_generator_.Map().MapImg().W());
+#if !defined(_WIN32)
                 usleep(delay_time_*1000);
+#else
+                Sleep(delay_time_);
+#endif
 
             }
             else

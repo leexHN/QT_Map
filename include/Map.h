@@ -7,7 +7,6 @@
 #include <vector>
 #include <iostream>
 #include <memory>
-#include <bits/shared_ptr.h>
 #include <stack>
 #include <string>
 #include <exception>
@@ -39,7 +38,7 @@ struct S_MapIMg{
         Init(row_,col_,wall,edge,space,false);
     }
 
-    inline uchar &operator() (unsigned int row, unsigned int col){
+    inline uchar &operator() (size_t row, size_t col){
         if(row >= h_ || col >= w_)
             throw std::range_error("[S_MapIMg] : image index out of range!");
         return map_pr[w_ * row + col];
@@ -50,7 +49,7 @@ struct S_MapIMg{
     /**
      * @brief remove wall according the location of !!!S_MAP!!!(is not the loc of image)
      */
-    void RemoveWall(unsigned int row, unsigned col, DIRECTION dir);
+    void RemoveWall(size_t row, size_t col, DIRECTION dir);
 
     /**
      * @brief set space color according the location of !!!S_MAP!!!(is not the loc of image)
@@ -63,16 +62,16 @@ private:
     unsigned int h_,w_;
     uchar * map_pr = nullptr;
 
-    inline uchar & I(unsigned int row, unsigned int col){
+    inline uchar & I(size_t row, size_t col){
         return (*(this))(row, col);
     }
 
     /**
      * @brief Full an area using same @param value (c1,r1) top-left corner (r2,c2) bottom-right corner
      */
-    void FullArea(unsigned int r1, unsigned int c1, unsigned int r2, unsigned int c2, uchar value = 255);
+    void FullArea(size_t r1, size_t c1, size_t r2, size_t c2, uchar value = 255);
 
-    void FullAreaRef(unsigned int r1, unsigned int c1, unsigned int h, unsigned int w, uchar value = 255);
+    void FullAreaRef(size_t r1, size_t c1, unsigned int h, unsigned int w, uchar value = 255);
 
     void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space, bool is_auto_adjust = true);
 
@@ -135,8 +134,8 @@ private:
 //    std::vector<char>::reference operator()(int row, int col){
 //        return map_2d_[row][col];
 //    }
-
-    static inline bool IsEven(int num){
+    template<typename T>
+    static inline bool IsEven(T num){
         return num%2==0;
     }
 

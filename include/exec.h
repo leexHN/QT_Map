@@ -8,7 +8,11 @@
 #include <QApplication>
 #include <gui/mainwindow.h>
 #include <thread>
+#if !defined(_WIN32)
 #include <zconf.h>
+#else
+#include <Windows.h>
+#endif
 #include <mutex>
 #include "Map.h"
 #include "signals.h"
