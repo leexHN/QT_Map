@@ -13,6 +13,7 @@
 #include "iostream"
 #include <cassert>
 #include <sstream>
+#include <future>
 
 /*********************************************************************
  ** Utility Function
@@ -128,19 +129,28 @@ std::ostream& operator << (std::ostream &os, const S_Maze& rhs){
 }
 
 void S_Maze::Convert2D() {
-    for (size_t i = 0; i < maze_.size(); ++i) {
-        for (size_t j = 0; j < maze_[0].size(); ++j) {
-            auto map_cell = maze_[i][j];
-            if(map_cell[DIRECTION::L] == 1)
-                maze_img_.RemoveWall(i, j, DIRECTION::L);
-            if(map_cell[DIRECTION::U] == 1)
-                maze_img_.RemoveWall(i, j, DIRECTION::U);
-            if(map_cell[DIRECTION::R] == 1)
-                maze_img_.RemoveWall(i, j, DIRECTION::R);
-            if(map_cell[DIRECTION::D] == 1)
-                maze_img_.RemoveWall(i, j, DIRECTION::D);
-        }
+    std::vector<std::future<void>> fu_vec;
+    for(size_t i = 0; i < maze_.size(); ++i){
+        auto func_ = [i,this](){
+            for (size_t j = 0; j < maze_[0].size(); ++j) {
+                auto map_cell = maze_[i][j];
+                if(map_cell[DIRECTION::L] == 1)
+                    maze_img_.RemoveWall(i, j, DIRECTION::L);
+                if(map_cell[DIRECTION::U] == 1)
+                    maze_img_.RemoveWall(i, j, DIRECTION::U);
+                if(map_cell[DIRECTION::R] == 1)
+                    maze_img_.RemoveWall(i, j, DIRECTION::R);
+                if(map_cell[DIRECTION::D] == 1)
+                    maze_img_.RemoveWall(i, j, DIRECTION::D);
+            }
+        };
+        fu_vec.push_back(std::async(std::launch::async, func_));
     }
+
+    for(const auto & fu:fu_vec){
+        fu.wait();
+    }
+
 }
 
 std::string S_Maze::Convert2DStr() const {

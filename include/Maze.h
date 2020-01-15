@@ -117,7 +117,11 @@ struct S_Maze{
         return maze_[row][col][check];
     }
 
-    S_MazeIMg &MapImg(){ Convert2D(); return maze_img_;}
+    S_MazeIMg &MapImg(){
+//        Convert2D();
+        return maze_img_;}
+
+    void Convert2D(); // turn maze_ to img
 
     std::vector<std::vector<std::vector<bool>>> &Map(){ return maze_;}
     const std::vector<std::vector<std::string>> &MapStr(){return map_2d_;};
@@ -126,8 +130,6 @@ private:
     std::vector<std::vector<std::vector<bool>>> maze_;
     std::vector<std::vector<str_t>> map_2d_;
     S_MazeIMg maze_img_;
-
-    void Convert2D();
 
     std::string Convert2DStr() const;
 

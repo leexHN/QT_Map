@@ -18,11 +18,14 @@ void Exec::MazeProcessThread() {
             flags_.reset_row_col = false;
             flags_.start = false;
             print_flag = true;
+            win_.ConvertToImg(maze_gen_->MazeImgBits(MazeImgFlag::SHOW_STACK),
+                              (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
             continue;
         }
 
         if(flags_.start){
             if(!maze_gen_->IsFinish()){
+                print_flag = true;
                 maze_gen_->Step();
                 if(flags_.show_stack)
                     win_.ConvertToImg(maze_gen_->MazeImgBits(MazeImgFlag::SHOW_STACK),
@@ -39,12 +42,17 @@ void Exec::MazeProcessThread() {
             }
             else
                 if(print_flag){
-                    win_.SetTextBrowser("Mapping Finished!!!");
                     print_flag = false;
-                    win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
-                    flags_.reset_row_col = true;
+                    flags_.start = false;
+                    maze_gen_->Reset(row_,col_);
                     win_.ResetIsRun();
+
+                    win_.SetTextBrowser("Mapping Finished!!!");
+                    win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
+                    win_.SetTextBrowser("This Loop Cost Time: " + QString::number(timer_.ElapseMs(),'f',2) + " ms");
                 }
         }
+        else
+            timer_.Reset();
     }
 }

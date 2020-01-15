@@ -78,21 +78,25 @@ void DFS_MazeGen::Step() {
                 map(r_,c_,DIRECTION::L) = 1; // remove current left wall
                 c_--; // run left
                 map(r_,c_,DIRECTION::R) = 1; // right which is origin cell remove wall
+                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::R);
                 break;
             case DIRECTION::U:
                 map(r_,c_,DIRECTION::U) = 1;
                 r_--;
                 map(r_,c_,DIRECTION::D) = 1;
+                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::D);
                 break;
             case DIRECTION::R:
                 map(r_,c_,DIRECTION::R) = 1;
                 c_++;
                 map(r_,c_,DIRECTION::L) = 1;
+                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::L);
                 break;
             case DIRECTION::D:
                 map(r_,c_,DIRECTION::D) = 1;
                 r_++;
                 map(r_,c_,DIRECTION::U) = 1;
+                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::U);
                 break;
             default:
                 assert(false);

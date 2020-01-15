@@ -17,6 +17,7 @@
 #include "Maze.h"
 #include "signals.h"
 #include "maze_factory.h"
+#include <SteadyTimer.hpp>
 
 
 
@@ -77,6 +78,7 @@ private:
     S_Flags flags_;
     AbstractMazeGen* maze_gen_ = nullptr;
     std::shared_ptr<AbstractMazeFactory> maze_fac_pr_;
+    SteadyTimer timer_;
 
     void MazeProcessThread();
 };
