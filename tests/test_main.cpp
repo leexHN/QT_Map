@@ -11,7 +11,7 @@
 #else
 #include<Windows.h>
 #endif
-#include "Map.h"
+#include "Maze.h"
 
 
 MainWindow * pr_w;

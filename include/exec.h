@@ -14,7 +14,7 @@
 #include <Windows.h>
 #endif
 #include <mutex>
-#include "Map.h"
+#include "Maze.h"
 #include "signals.h"
 
 

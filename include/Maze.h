@@ -15,11 +15,11 @@
 typedef unsigned char uchar;
 enum DIRECTION{L=0,U,R,D};
 
-struct S_MapIMg{
-    explicit S_MapIMg(unsigned int row, unsigned int col){
+struct S_MazeIMg{
+    explicit S_MazeIMg(unsigned int row, unsigned int col){
         Reset(row,col);
     };
-    ~S_MapIMg(){
+    ~S_MazeIMg(){
         delete map_pr;
     }
     inline unsigned int W() const { return w_;}
@@ -40,7 +40,7 @@ struct S_MapIMg{
 
     inline uchar &operator() (size_t row, size_t col){
         if(row >= h_ || col >= w_)
-            throw std::range_error("[S_MapIMg] : image index out of range!");
+            throw std::range_error("[S_MazeIMg] : image index out of range!");
         return map_pr[w_ * row + col];
     }
 
@@ -75,22 +75,22 @@ private:
 
     void Init(unsigned int row,unsigned int col, uchar wall, uchar edge, uchar space, bool is_auto_adjust = true);
 
-    S_MapIMg& operator = (const S_MapIMg&); // prohibit copy or assigment
-    S_MapIMg(const S_MapIMg&);
+    S_MazeIMg& operator = (const S_MazeIMg&); // prohibit copy or assigment
+    S_MazeIMg(const S_MazeIMg&);
 };
 
 
-// The array map_ is going to hold the array information for each cell.
+// The array maze_ is going to hold the array information for each cell.
 // The first four coordinates tell if walls exist on those sides(1 means dont have wall)
 // and the fifth indicates if the cell has been visited in the search.
 // map[row, col, (LEFT, UP, RIGHT, DOWN, CHECK_IF_VISITED)]
-struct S_Map{
+struct S_Maze{
     typedef std::string str_t;
-    explicit S_Map(int row, int col)
+    explicit S_Maze(int row, int col)
     : cross("+"), v_w("|"), h_w("--"), space("  "),
-      map_(row,std::vector<std::vector<bool>>(col,std::vector<bool>(5, 0))),
+      maze_(row, std::vector<std::vector<bool>>(col, std::vector<bool>(5, 0))),
       map_2d_(row + row + 1,std::vector<str_t>(col + col + 1, space)),
-      map_img_(row, col)
+      maze_img_(row, col)
     {
         for(size_t i=0; i<= 2*row ;i++){
             for(size_t j=0;j<= 2*col; j++){
@@ -107,25 +107,25 @@ struct S_Map{
         map_2d_[1][0] = ' ';
         map_2d_[2*row - 1][2*col] = ' ';
     };
-    ~S_Map() = default;
+    ~S_Maze() = default;
 
     std::vector<std::vector<bool>>& operator[] (int index){
-        return map_[index];
+        return maze_[index];
     }
 
     std::vector<bool>::reference operator()(int row, int col, int check){
-        return map_[row][col][check];
+        return maze_[row][col][check];
     }
 
-    S_MapIMg &MapImg(){ Convert2D(); return map_img_;}
+    S_MazeIMg &MapImg(){ Convert2D(); return maze_img_;}
 
-    std::vector<std::vector<std::vector<bool>>> &Map(){ return map_;}
+    std::vector<std::vector<std::vector<bool>>> &Map(){ return maze_;}
     const std::vector<std::vector<std::string>> &MapStr(){return map_2d_;};
 private:
     const std::string cross, v_w, h_w, space; //v_w vertical wall
-    std::vector<std::vector<std::vector<bool>>> map_;
+    std::vector<std::vector<std::vector<bool>>> maze_;
     std::vector<std::vector<str_t>> map_2d_;
-    S_MapIMg map_img_;
+    S_MazeIMg maze_img_;
 
     void Convert2D();
 
@@ -139,7 +139,7 @@ private:
         return num%2==0;
     }
 
-    friend std::ostream& operator << (std::ostream &os, const S_Map& rhs);
+    friend std::ostream& operator << (std::ostream &os, const S_Maze& rhs);
 };
 
 class MapGen{
@@ -156,12 +156,12 @@ public:
 
     void Loop(){while(!IsFinish()) Step();};
 
-    S_Map& Map(){ return *map_pr_;}
+    S_Maze& Map(){ return *map_pr_;}
 
     const uchar* MapImgBits(bool is_show_stack = false);
 
 private:
-    std::shared_ptr<S_Map> map_pr_;
+    std::shared_ptr<S_Maze> map_pr_;
     int step_count_;
     int r_,c_; // current process location
     int num_cols,num_rows;
@@ -173,7 +173,7 @@ private:
     friend inline std::ostream &operator << (std::ostream &os, const MapGen& rhs);
 };
 
-std::ostream& operator << (std::ostream &os, const S_Map& rhs);
+std::ostream& operator << (std::ostream &os, const S_Maze& rhs);
 inline std::ostream& operator << (std::ostream &os, const MapGen& rhs){
     return os << (*(rhs.map_pr_)) ;
 }

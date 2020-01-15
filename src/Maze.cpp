@@ -9,7 +9,7 @@
 #include <Windows.h>
 #include <time.h>
 #endif
-#include "Map.h"
+#include "Maze.h"
 #include "iostream"
 #include <cassert>
 #include <sstream>
@@ -34,7 +34,7 @@ inline void seed_rand()
  ** Class S_MapImg
  *********************************************************************/
 
-void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, uchar space,bool is_auto_adjust) {
+void S_MazeIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, uchar space, bool is_auto_adjust) {
     if(!map_pr)
         delete map_pr;
     if(is_auto_adjust){
@@ -67,17 +67,17 @@ void S_MapIMg::Init(unsigned int row, unsigned int col, uchar wall, uchar edge, 
 
 }
 
-void S_MapIMg::FullArea(size_t r1, size_t c1, size_t r2, size_t c2, uchar value) {
+void S_MazeIMg::FullArea(size_t r1, size_t c1, size_t r2, size_t c2, uchar value) {
     for(size_t r= r1; r <= r2; r++)
         for(size_t c = c1; c <= c2; c++)
             I(r, c) = value;
 }
 
-void S_MapIMg::FullAreaRef(size_t r1, size_t c1, unsigned int h, unsigned int w, uchar value) {
+void S_MazeIMg::FullAreaRef(size_t r1, size_t c1, unsigned int h, unsigned int w, uchar value) {
     FullArea(r1,c1,r1+h -1,c1+w -1,value);
 }
 
-void S_MapIMg::RemoveWall(size_t row, size_t col, DIRECTION dir) {
+void S_MazeIMg::RemoveWall(size_t row, size_t col, DIRECTION dir) {
     size_t s_row,s_col; // space left top corner location of img
     s_row = edge_pix_ + (space_pix_ + wal_pix_) * row;
     s_col = edge_pix_ + (space_pix_ + wal_pix_) * col;
@@ -107,7 +107,7 @@ void S_MapIMg::RemoveWall(size_t row, size_t col, DIRECTION dir) {
     }
 }
 
-void S_MapIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
+void S_MazeIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
     row = edge_pix_ + row * (space_pix_+wal_pix_);
     col = edge_pix_ + col * (space_pix_+wal_pix_);
     if(I(row,col) == depth)
@@ -120,30 +120,30 @@ void S_MapIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
  ** Class S_Map
  *********************************************************************/
 
-std::ostream& operator << (std::ostream &os, const S_Map& rhs){
+std::ostream& operator << (std::ostream &os, const S_Maze& rhs){
 //    rhs.Convert2D();
     os<< "The Map Is : \n";
     os << rhs.Convert2DStr();
     return os;
 }
 
-void S_Map::Convert2D() {
-    for (size_t i = 0; i < map_.size(); ++i) {
-        for (size_t j = 0; j < map_[0].size(); ++j) {
-            auto map_cell = map_[i][j];
+void S_Maze::Convert2D() {
+    for (size_t i = 0; i < maze_.size(); ++i) {
+        for (size_t j = 0; j < maze_[0].size(); ++j) {
+            auto map_cell = maze_[i][j];
             if(map_cell[DIRECTION::L] == 1)
-                map_img_.RemoveWall(i,j,DIRECTION::L);
+                maze_img_.RemoveWall(i, j, DIRECTION::L);
             if(map_cell[DIRECTION::U] == 1)
-                map_img_.RemoveWall(i,j,DIRECTION::U);
+                maze_img_.RemoveWall(i, j, DIRECTION::U);
             if(map_cell[DIRECTION::R] == 1)
-                map_img_.RemoveWall(i,j,DIRECTION::R);
+                maze_img_.RemoveWall(i, j, DIRECTION::R);
             if(map_cell[DIRECTION::D] == 1)
-                map_img_.RemoveWall(i,j,DIRECTION::D);
+                maze_img_.RemoveWall(i, j, DIRECTION::D);
         }
     }
 }
 
-std::string S_Map::Convert2DStr() const {
+std::string S_Maze::Convert2DStr() const {
     std::stringstream ss;
     for(const auto& sub_map: map_2d_){
         for(const auto& ss_map : sub_map)
@@ -163,7 +163,7 @@ void MapGen::Reset(int row, int col) {
 }
 
 void MapGen::Step() {
-    S_Map& map = *map_pr_.get();
+    S_Maze& map = *map_pr_.get();
     map(r_, c_, 4) = 1; // is visited
     std::vector<int> check;
 
@@ -224,7 +224,7 @@ void MapGen::_Reset(int row, int col) {
     num_cols = col;
     r_ = 0;
     c_ = 0;
-    map_pr_.reset(new S_Map(row, col));
+    map_pr_.reset(new S_Maze(row, col));
     history_ =  std::stack<std::pair<int,int>>();
     history_.push({r_,c_});
     pre_history_ = history_;
