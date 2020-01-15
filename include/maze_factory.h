@@ -30,19 +30,21 @@ public:
 
     virtual void Loop() = 0;
 
+    S_Maze& Maze(){ return *maze_pr_;}
+
     virtual const uchar* MazeImgBits(MazeImgFlag setting) = 0;
 
     const uchar* MazeImgBits(){ return MazeImgBits(MAZE_DEFAULT);};
 protected:
     int num_cols,num_rows;
     int step_count_;
-    std::shared_ptr<S_Maze> map_pr_;
+    std::shared_ptr<S_Maze> maze_pr_;
 };
 
 
 class AbstractMazeFactory{
 public:
-    virtual ~AbstractMazeFactory() = 0;
+    virtual ~AbstractMazeFactory() = default;
     virtual AbstractMazeGen* CreateMazeGen(int row, int col) = 0;
 
 protected:
@@ -51,7 +53,11 @@ protected:
     std::stack<AbstractMazeGen*> maze_gen_pr_stack_;
 };
 
-class DFS_MazeGen:AbstractMazeGen{
+/*********************************************************************
+ ** Concrete Products
+ *********************************************************************/
+
+class DFS_MazeGen:public AbstractMazeGen{
 public:
     explicit DFS_MazeGen(int row, int col):AbstractMazeGen(row,col),r_(0),c_(0){
         Reset(row,col);
@@ -67,12 +73,37 @@ public:
 
     void Loop() override {while(!IsFinish()) Step();};
 
-    S_Maze& Map(){ return *map_pr_;}
-
     const uchar* MazeImgBits(MazeImgFlag setting) override;
 
 private:
     int r_,c_; // current process location
     std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
     std::stack<std::pair<int,int>> pre_history_;
+};
+
+
+/*********************************************************************
+ ** Concrete Factories
+ *********************************************************************/
+
+class DFS_MazeGenFactory:public AbstractMazeFactory{
+public:
+    DFS_MazeGenFactory() = default;
+    ~DFS_MazeGenFactory() override{
+        DeleteMazeGen();
+    };
+
+    AbstractMazeGen* CreateMazeGen(int row, int col)override {
+        maze_gen_pr_stack_.push(new DFS_MazeGen(row,col));
+        return maze_gen_pr_stack_.top();
+    }
+
+private:
+    void DeleteMazeGen() override {
+        while (!maze_gen_pr_stack_.empty()){
+            delete maze_gen_pr_stack_.top();
+            maze_gen_pr_stack_.pop();
+        }
+    }
+
 };

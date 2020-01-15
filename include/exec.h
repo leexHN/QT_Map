@@ -16,33 +16,37 @@
 #include <mutex>
 #include "Maze.h"
 #include "signals.h"
+#include "maze_factory.h"
 
 
 
 class Exec{
 public:
     explicit Exec(int &arc,char** argv):app_(arc,argv),
-        row_(10),col_(10),
-        map_generator_(row_,col_){
+        row_(10),col_(10){
         // connect message
         G_SetRowColSig.connect([this](int row, int col){ResetMap(row,col);});
         G_IsShowStackSig.connect([this](bool flag){ShowStack(flag);});
         G_RunSig.connect([this](bool flag){Start(flag);});
         G_SetDelayTimeSig.connect([this](int ms){SetDelayTime(ms);});
 
+        // maze_factory
+        maze_fac_pr_ = std::make_shared<DFS_MazeGenFactory>();
+        maze_gen_ = maze_fac_pr_->CreateMazeGen(row_,col_);
+
         // draw basic map
-        win_.ConvertToImg(map_generator_.Map().MapImg().Bits(),
-                map_generator_.Map().MapImg().H(),map_generator_.Map().MapImg().W());
+        win_.ConvertToImg(maze_gen_->Maze().MapImg().Bits(),
+                          (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
         //run map process thread
         flags_.run_status = true;
-        map_process_thread_ = std::thread([this](){MapProcessThread();});
+        maze_process_thread_ = std::thread([this](){ MazeProcessThread();});
     };
 
     ~Exec(){
         S_Flags end_flag{};
         flags_ = end_flag;
-        if(map_process_thread_.joinable())
-            map_process_thread_.join();
+        if(maze_process_thread_.joinable())
+            maze_process_thread_.join();
     }
 
     inline int Run(){
@@ -69,9 +73,10 @@ private:
     MainWindow win_;
     int row_, col_;
     int delay_time_ = 0; // ms
-    MapGen map_generator_;
-    std::thread map_process_thread_;
+    std::thread maze_process_thread_;
     S_Flags flags_;
+    AbstractMazeGen* maze_gen_ = nullptr;
+    std::shared_ptr<AbstractMazeFactory> maze_fac_pr_;
 
-    void MapProcessThread();
+    void MazeProcessThread();
 };

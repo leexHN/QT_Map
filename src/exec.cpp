@@ -10,11 +10,11 @@ void Exec::ResetMap(int row, int col) {
     col_ = col;
 }
 
-void Exec::MapProcessThread() {
+void Exec::MazeProcessThread() {
     static bool print_flag = true;
     while (flags_.run_status){
         if(flags_.reset_row_col){
-            map_generator_.Reset(row_,col_);
+            maze_gen_->Reset(row_,col_);
             flags_.reset_row_col = false;
             flags_.start = false;
             print_flag = true;
@@ -22,14 +22,14 @@ void Exec::MapProcessThread() {
         }
 
         if(flags_.start){
-            if(!map_generator_.IsFinish()){
-                map_generator_.Step();
+            if(!maze_gen_->IsFinish()){
+                maze_gen_->Step();
                 if(flags_.show_stack)
-                    win_.ConvertToImg(map_generator_.MapImgBits(true),
-                                      (int)map_generator_.Map().MapImg().H(),(int)map_generator_.Map().MapImg().W());
+                    win_.ConvertToImg(maze_gen_->MazeImgBits(MazeImgFlag::SHOW_STACK),
+                                      (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
                 else
-                    win_.ConvertToImg(map_generator_.MapImgBits(),
-                                      (int)map_generator_.Map().MapImg().H(),(int)map_generator_.Map().MapImg().W());
+                    win_.ConvertToImg(maze_gen_->MazeImgBits(),
+                                      (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
 #if !defined(_WIN32)
                 usleep(delay_time_*1000);
 #else
@@ -41,7 +41,7 @@ void Exec::MapProcessThread() {
                 if(print_flag){
                     win_.SetTextBrowser("Mapping Finished!!!");
                     print_flag = false;
-                    win_.SetTextBrowser("Mapping cost steps : "+ QString::number(map_generator_.StepCount()));
+                    win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
                     flags_.reset_row_col = true;
                     win_.ResetIsRun();
                 }

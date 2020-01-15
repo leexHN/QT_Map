@@ -41,14 +41,14 @@ void DFS_MazeGen::Reset(int row, int col) {
     num_cols = col;
     r_ = 0;
     c_ = 0;
-    map_pr_.reset(new S_Maze(row, col));
+    maze_pr_.reset(new S_Maze(row, col));
     history_ =  std::stack<std::pair<int,int>>();
     history_.push({r_,c_});
     pre_history_ = history_;
 }
 
 void DFS_MazeGen::Step() {
-    S_Maze& map = *map_pr_.get();
+    S_Maze& map = *maze_pr_.get();
     map(r_, c_, 4) = 1; // is visited
     std::vector<int> check;
 
@@ -108,15 +108,15 @@ const uchar *DFS_MazeGen::MazeImgBits(MazeImgFlag setting) {
     if(is_show_stack){
         if(pre_history_.size() > history_.size()){ //pop
             auto temp = pre_history_.top();
-            map_pr_->MapImg().ChangeSpaceDepth(temp.first,temp.second,255);
+            maze_pr_->MapImg().ChangeSpaceDepth(temp.first, temp.second, 255);
         }else if(pre_history_.size() < history_.size() && !pre_history_.empty()){ // push
             uchar base_color = 170, top_color = 50;
             const auto top = history_.top() , pre_top = pre_history_.top();
-            map_pr_->MapImg().ChangeSpaceDepth(top.first,top.second,top_color);
-            map_pr_->MapImg().ChangeSpaceDepth(pre_top.first,pre_top.second,base_color);
+            maze_pr_->MapImg().ChangeSpaceDepth(top.first, top.second, top_color);
+            maze_pr_->MapImg().ChangeSpaceDepth(pre_top.first, pre_top.second, base_color);
         }
         pre_history_ = history_;
     }
 
-    return map_pr_->MapImg().Bits();
+    return maze_pr_->MapImg().Bits();
 }

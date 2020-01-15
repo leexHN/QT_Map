@@ -112,7 +112,7 @@ void MainWindow::RunOrPause() {
 
 void MainWindow::Reset() {
     is_run_ = false;
-    SetTextBrowser("Now Reset the Map [" + QString::number(set_row_) + "," + QString::number(set_col_) +
+    SetTextBrowser("Now Reset the Maze [" + QString::number(set_row_) + "," + QString::number(set_col_) +
     "].\t Mapping Process is Terminate");
     G_SetRowColSig(set_row_,set_col_);
 }

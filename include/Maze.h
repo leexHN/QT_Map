@@ -142,40 +142,6 @@ private:
     friend std::ostream& operator << (std::ostream &os, const S_Maze& rhs);
 };
 
-class MapGen{
-public:
-    MapGen(int row, int col);
-
-    void Reset(int row, int col);
-
-    bool IsFinish(){ return history_.empty();};
-
-    void Step();
-
-    int StepCount(){ return step_count_;};
-
-    void Loop(){while(!IsFinish()) Step();};
-
-    S_Maze& Map(){ return *map_pr_;}
-
-    const uchar* MapImgBits(bool is_show_stack = false);
-
-private:
-    std::shared_ptr<S_Maze> map_pr_;
-    int step_count_;
-    int r_,c_; // current process location
-    int num_cols,num_rows;
-    std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
-    std::stack<std::pair<int,int>> pre_history_;
-
-    void _Reset(int row, int col);
-
-    friend inline std::ostream &operator << (std::ostream &os, const MapGen& rhs);
-};
-
 std::ostream& operator << (std::ostream &os, const S_Maze& rhs);
-inline std::ostream& operator << (std::ostream &os, const MapGen& rhs){
-    return os << (*(rhs.map_pr_)) ;
-}
 
 

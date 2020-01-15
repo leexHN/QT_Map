@@ -122,7 +122,7 @@ void S_MazeIMg::ChangeSpaceDepth(unsigned int row, unsigned col, uchar depth) {
 
 std::ostream& operator << (std::ostream &os, const S_Maze& rhs){
 //    rhs.Convert2D();
-    os<< "The Map Is : \n";
+    os<< "The Maze Is : \n";
     os << rhs.Convert2DStr();
     return os;
 }
@@ -151,102 +151,6 @@ std::string S_Maze::Convert2DStr() const {
         ss<<std::endl;
     }
     return ss.str();
-}
-
-MapGen::MapGen(int row, int col):
-        step_count_(0){
-    _Reset(row,col);
-}
-
-void MapGen::Reset(int row, int col) {
-    _Reset(row,col);
-}
-
-void MapGen::Step() {
-    S_Maze& map = *map_pr_.get();
-    map(r_, c_, 4) = 1; // is visited
-    std::vector<int> check;
-
-    if (c_ > 0 && map(r_,c_-1,4) == 0)
-        check.push_back(DIRECTION::L);
-    if (r_ > 0 && map(r_-1,c_,4) == 0) // the image origin is in the top-left side
-        check.push_back(DIRECTION::U);
-    if (c_ < num_cols-1 && map(r_,c_+1,4) == 0)
-        check.push_back(DIRECTION::R);
-    if (r_ < num_rows-1 && map(r_+1,c_,4) == 0)
-        check.push_back(DIRECTION::D);
-
-    if(check.empty()){
-        std::pair<int,int> temp = history_.top();
-        history_.pop();
-        r_ = temp.first;
-        c_ = temp.second;
-    }else{
-        if(r_!=0 || c_!= 0)
-            history_.push({r_,c_});
-        size_t range = check.size(); // [0~ range)
-        //seed_rand();
-        int index = rand()%range;
-        auto move_direction = check[index];
-        switch (move_direction){
-            case DIRECTION::L: //Remove the wall between the current cell and the chosen cell(!!!the wall do not occupy any cell)
-                map(r_,c_,DIRECTION::L) = 1; // remove current left wall
-                c_--; // run left
-                map(r_,c_,DIRECTION::R) = 1; // right which is origin cell remove wall
-                break;
-            case DIRECTION::U:
-                map(r_,c_,DIRECTION::U) = 1;
-                r_--;
-                map(r_,c_,DIRECTION::D) = 1;
-                break;
-            case DIRECTION::R:
-                map(r_,c_,DIRECTION::R) = 1;
-                c_++;
-                map(r_,c_,DIRECTION::L) = 1;
-                break;
-            case DIRECTION::D:
-                map(r_,c_,DIRECTION::D) = 1;
-                r_++;
-                map(r_,c_,DIRECTION::U) = 1;
-                break;
-            default:
-                assert(false);
-        }
-    }
-
-    step_count_++;
-}
-
-void MapGen::_Reset(int row, int col) {
-    seed_rand();
-    step_count_ = 0;
-    num_rows = row;
-    num_cols = col;
-    r_ = 0;
-    c_ = 0;
-    map_pr_.reset(new S_Maze(row, col));
-    history_ =  std::stack<std::pair<int,int>>();
-    history_.push({r_,c_});
-    pre_history_ = history_;
-}
-
-const uchar *MapGen::MapImgBits(bool is_show_stack) {
-    if(is_show_stack){
-//        static std::stack<std::pair<int,int>> pre_history_ = history_;
-
-        if(pre_history_.size() > history_.size()){ //pop
-            auto temp = pre_history_.top();
-            map_pr_->MapImg().ChangeSpaceDepth(temp.first,temp.second,255);
-        }else if(pre_history_.size() < history_.size() && !pre_history_.empty()){ // push
-            uchar base_color = 170, top_color = 50;
-            const auto top = history_.top() , pre_top = pre_history_.top();
-            map_pr_->MapImg().ChangeSpaceDepth(top.first,top.second,top_color);
-            map_pr_->MapImg().ChangeSpaceDepth(pre_top.first,pre_top.second,base_color);
-        }
-        pre_history_ = history_;
-    }
-
-    return map_pr_->MapImg().Bits();
 }
 
 

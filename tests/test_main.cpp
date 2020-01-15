@@ -12,39 +12,42 @@
 #include<Windows.h>
 #endif
 #include "Maze.h"
+#include "maze_factory.h"
 
 
 MainWindow * pr_w;
 
-TEST(MapGenTest,test1){
+TEST(MapGenTest,DFS){
     std::thread MapGenTest;
     auto MapGenTestFunc = [](){
         MainWindow & w = *pr_w;
-        MapGen generator(50,70);
+        DFS_MazeGenFactory dfs_maze_fac_;
+        AbstractMazeGen* generator = dfs_maze_fac_.CreateMazeGen(50,70);
         do{
             // draw image
-            w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
-            std::cout << "Time : " << generator.StepCount() << std::endl;
-            generator.Step();
-        }while (!generator.IsFinish());
-        w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
+            w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+            std::cout << "Time : " << generator->StepCount() << std::endl;
+            generator->Step();
+        }while (!generator->IsFinish());
+        w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
     };
     MapGenTest = std::thread(MapGenTestFunc);
     MapGenTest.detach();
     SUCCEED();
 }
 
-TEST(MapGenTest,show_stack){
+TEST(MapGenTest,dfs_show_stack){
     std::thread MapGenTest;
     auto MapGenTestFunc = [](){
         MainWindow & w = *pr_w;
-        MapGen generator(25,30);
+        DFS_MazeGenFactory dfs_maze_fac_;
+        AbstractMazeGen* generator = dfs_maze_fac_.CreateMazeGen(25,30);
         do{
             // draw image
-            w.ConvertToImg(generator.MapImgBits(true),generator.Map().MapImg().H(),generator.Map().MapImg().W());
-            generator.Step();
-        }while (!generator.IsFinish());
-        w.ConvertToImg(generator.Map().MapImg().Bits(),generator.Map().MapImg().H(),generator.Map().MapImg().W());
+            w.ConvertToImg(generator->MazeImgBits(SHOW_STACK),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+            generator->Step();
+        }while (!generator->IsFinish());
+        w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
     };
     MapGenTest = std::thread(MapGenTestFunc);
     MapGenTest.detach();
@@ -54,7 +57,7 @@ TEST(MapGenTest,show_stack){
 TEST(S_MAP_IMG_TEST, remove_all_wall){
     MainWindow & w = *pr_w;
     unsigned int row = 10,col = 10;
-    S_MapIMg img(row,col);
+    S_MazeIMg img(row,col);
     for(size_t i=0; i< row; i++){
         for (size_t j = 0; j < col; ++j) {
             for(int k=0;k<4;k++)
@@ -68,7 +71,7 @@ TEST(S_MAP_IMG_TEST, remove_all_wall){
 TEST(S_MAP_IMG_TEST, set_all_space_grey){
     MainWindow & w = *pr_w;
     unsigned int row = 10,col = 10;
-    S_MapIMg img(row,col);
+    S_MazeIMg img(row,col);
     for(size_t i=0; i< row; i++)
         for (size_t j = 0; j < col; ++j)
             img.ChangeSpaceDepth(i,j,128);
