@@ -4,6 +4,7 @@
 #include <iostream>
 #include <QtCore/QDateTime>
 #include "signals.h"
+#include "SteadyTimer.hpp"
 
 
 const int MainWindow::GNumRowMap = 400;
@@ -25,6 +26,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->reset_pushButton,SIGNAL(pressed()), this, SLOT(Reset()));
 
     connect(this, SIGNAL(textBrowserSig(const QString &)), ui->textBrowser,SLOT(append(const QString &)));
+    connect(this,SIGNAL(clearBrowserSig()),ui->textBrowser,SLOT(clear()));
 
     timer_id_ = startTimer(1);
     SetUpdateFrequency(update_frequency_);
@@ -74,6 +76,15 @@ void MainWindow::SetUpdateFrequency(uint hz) {
 }
 
 void MainWindow::SetTextBrowser(const QString &context) {
+    static unsigned int lines_count = 0;
+    static SteadyTimer last_call_time;
+    lines_count++;
+    if(lines_count >= 100 && last_call_time.ElapseMs() >= 100){
+        lines_count = 0;
+        emit clearBrowserSig();
+    }
+    last_call_time.Reset();
+
     QDateTime time = QDateTime::currentDateTime();
     QString log_string = "[" + time.toString("hh-mm-ss.zzz") + "] : " + context;
     emit textBrowserSig(log_string);

@@ -60,6 +60,7 @@ signals:
     void StopTimerSig(int timer_id);
     void delayed_update();
     void textBrowserSig(const QString &text);
+    void clearBrowserSig();
 
 };
 #endif // MAINWINDOW_H
