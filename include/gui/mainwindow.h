@@ -53,6 +53,7 @@ private slots:
     void SetCol(int col){set_col_ = col;};
     void ShowStack(int state);
     void SetDelayTime(int time);
+    void SetMazeGenerator(int type);
     void RunOrPause();
     void Reset();
 

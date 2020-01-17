@@ -14,6 +14,8 @@
 #include <cassert>
 #include <sstream>
 
+const char* MAZE_GENERATOR_NAME[] = {"DFS","Random Prim"};
+
 /*********************************************************************
  ** Utility Function
  *********************************************************************/

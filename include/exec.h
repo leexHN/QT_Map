@@ -30,6 +30,7 @@ public:
         G_IsShowStackSig.connect([this](bool flag){ShowStack(flag);});
         G_RunSig.connect([this](bool flag){Start(flag);});
         G_SetDelayTimeSig.connect([this](int ms){SetDelayTime(ms);});
+        G_SetMazeGeneratorSig.connect([this](int type){ChangeGenerator(type);});
 
         // maze_factory
         maze_fac_pr_ = std::make_shared<DFS_MazeGenFactory>();
@@ -63,12 +64,15 @@ public:
 
     inline void SetDelayTime(int ms){delay_time_ = ms;}
 
+    inline void ChangeGenerator(int type){ flags_.cur_maze_gen = (MAZE_GENERATOR)type;};
+
 private:
     struct S_Flags{
         bool start = false;// true start false pause
         bool reset_row_col = false;
         bool show_stack = false;
         bool run_status = false;
+        MAZE_GENERATOR cur_maze_gen = DFS;
     };
     QApplication app_;
     MainWindow win_;
@@ -81,4 +85,6 @@ private:
     SteadyTimer timer_;
 
     void MazeProcessThread();
+    
+    void ChangeMazeFac(MAZE_GENERATOR type);
 };

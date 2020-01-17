@@ -13,12 +13,27 @@ void Exec::ResetMap(int row, int col) {
 void Exec::MazeProcessThread() {
     static bool print_flag = true;
     while (flags_.run_status){
+        if(flags_.cur_maze_gen != maze_gen_->CurMazeGenRateType()){
+            S_Flags new_flags{};
+            new_flags.cur_maze_gen = flags_.cur_maze_gen;
+            new_flags.run_status = true;
+            flags_ = new_flags;
+            ChangeMazeFac(flags_.cur_maze_gen);
+            print_flag = true;
+            win_.ConvertToImg(maze_gen_->MazeImgBits(),
+                              (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
+            win_.SetTextBrowser(QString("Now Change The Maze Generator to ") +
+                                MAZE_GENERATOR_NAME[flags_.cur_maze_gen] + QString("; Auto reset the maze and status. "));
+            win_.ResetIsRun();
+            continue;
+        }
+
         if(flags_.reset_row_col){
             maze_gen_->Reset(row_,col_);
             flags_.reset_row_col = false;
             flags_.start = false;
             print_flag = true;
-            win_.ConvertToImg(maze_gen_->MazeImgBits(MazeImgFlag::SHOW_STACK),
+            win_.ConvertToImg(maze_gen_->MazeImgBits(),
                               (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
             continue;
         }
@@ -54,5 +69,20 @@ void Exec::MazeProcessThread() {
         }
         else
             timer_.Reset();
+    }
+}
+
+void Exec::ChangeMazeFac(MAZE_GENERATOR type) {
+    switch (type){
+        case DFS:
+            maze_fac_pr_.reset(new DFS_MazeGenFactory());
+            maze_gen_ = maze_fac_pr_->CreateMazeGen(row_,col_);
+            break;
+        case RANDOM_PRIM:
+            maze_fac_pr_.reset(new RandomPrimGenFactory());
+            maze_gen_ = maze_fac_pr_->CreateMazeGen(row_,col_);
+            break;
+        default:
+            assert(false);
     }
 }

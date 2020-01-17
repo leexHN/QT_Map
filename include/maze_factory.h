@@ -15,6 +15,10 @@ enum MazeImgFlag{
     SHOW_STACK = 0x01
 };
 
+enum MAZE_GENERATOR{DFS = 0,RANDOM_PRIM};
+
+extern const char* MAZE_GENERATOR_NAME[];;
+
 class AbstractMazeGen{
 public:
     explicit AbstractMazeGen(int row, int col):num_rows(row),num_cols(col),step_count_(0){}
@@ -34,10 +38,14 @@ public:
     S_Maze& Maze(){ return *maze_pr_;}
 
     virtual const uchar* MazeImgBits(MazeImgFlag setting) {
-        return MazeImgBits();
+        if(setting != MAZE_DEFAULT)
+            throw std::logic_error("If Has Maze Setting, Must Override this Function");
+        return maze_pr_->MapImg().Bits();
     };
 
     const uchar* MazeImgBits(){ return MazeImgBits(MAZE_DEFAULT);};
+
+    virtual MAZE_GENERATOR CurMazeGenRateType() = 0;
 protected:
     int num_cols,num_rows;
     int step_count_;
@@ -88,6 +96,8 @@ public:
 
     const uchar* MazeImgBits(MazeImgFlag setting) override;
 
+    MAZE_GENERATOR CurMazeGenRateType() override { return DFS;}
+
 private:
     int r_,c_; // current process location
     std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
@@ -108,6 +118,8 @@ public:
     void Step() override;
 
     void Loop() override {while(!IsFinish()) Step();};
+
+    MAZE_GENERATOR CurMazeGenRateType() override { return RANDOM_PRIM;}
 private:
 
     std::set<std::pair<int,int>> history_;

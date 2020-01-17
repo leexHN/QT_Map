@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->col_spinBox,SIGNAL(valueChanged(int)), this, SLOT(SetCol(int)));
     connect(ui->delay_time_spinBox,SIGNAL(valueChanged(int)),this, SLOT(SetDelayTime(int)));
     connect(ui->show_stack_checkBox,SIGNAL(stateChanged(int)),this,SLOT(ShowStack(int)));
+    connect(ui->maze_gen_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetMazeGenerator(int)));
 
     connect(ui->r_p_Button,SIGNAL(pressed()), this, SLOT(RunOrPause()));
     connect(ui->reset_pushButton,SIGNAL(pressed()), this, SLOT(Reset()));
@@ -135,3 +136,7 @@ void MainWindow::ShowStack(int state){
         SetTextBrowser("Do not Stack In Mapping");
     G_IsShowStackSig(state == Qt::Checked);
 };
+
+void MainWindow::SetMazeGenerator(int type) {
+    G_SetMazeGeneratorSig(type);
+}
