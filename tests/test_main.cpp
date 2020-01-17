@@ -36,6 +36,24 @@ TEST(MapGenTest,DFS){
     SUCCEED();
 }
 
+TEST(MapGenTest,RandomPrim){
+    std::thread MapGenTest;
+    auto MapGenTestFunc = [](){
+        MainWindow & w = *pr_w;
+        RandomPrimGenFactory prim_maze_fac_;
+        AbstractMazeGen* generator = prim_maze_fac_.CreateMazeGen(50, 80);
+        do{
+            // draw image
+            w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+            generator->Step();
+        }while (!generator->IsFinish());
+        w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+    };
+    MapGenTest = std::thread(MapGenTestFunc);
+    MapGenTest.detach();
+    SUCCEED();
+}
+
 TEST(MapGenTest,dfs_show_stack){
     std::thread MapGenTest;
     auto MapGenTestFunc = [](){

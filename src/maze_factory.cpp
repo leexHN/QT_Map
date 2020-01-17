@@ -29,6 +29,54 @@ inline void seed_rand()
 #endif
 }
 
+template <typename T>
+inline  typename T::value_type RandomChoice(const T & container){
+    size_t range = container.size();
+    if(range == 0)
+        throw std::length_error("container size is 0");
+    int index = rand()%range;
+    auto c_iter = container.cbegin();
+    std::advance(c_iter, index);
+    return *c_iter;
+}
+
+
+
+/*********************************************************************
+ ** Class AbstractMazeGen
+ *********************************************************************/
+void AbstractMazeGen::RemoveWall(int &row, int &col, DIRECTION dir) {
+    S_Maze& maze = *maze_pr_.get();
+    switch (dir){
+        case DIRECTION::L: //Remove the wall between the current cell and the chosen cell(!!!the wall do not occupy any cell)
+            maze(row, col, DIRECTION::L) = 1; // remove current left wall
+            col--; // run left
+            maze(row, col, DIRECTION::R) = 1; // right which is origin cell remove wall
+            maze_pr_->MapImg().RemoveWall(row,col,DIRECTION::R);
+            break;
+        case DIRECTION::U:
+            maze(row, col, DIRECTION::U) = 1;
+            row--;
+            maze(row, col, DIRECTION::D) = 1;
+            maze_pr_->MapImg().RemoveWall(row,col,DIRECTION::D);
+            break;
+        case DIRECTION::R:
+            maze(row, col, DIRECTION::R) = 1;
+            col++;
+            maze(row, col, DIRECTION::L) = 1;
+            maze_pr_->MapImg().RemoveWall(row,col,DIRECTION::L);
+            break;
+        case DIRECTION::D:
+            maze(row, col, DIRECTION::D) = 1;
+            row++;
+            maze(row, col, DIRECTION::U) = 1;
+            maze_pr_->MapImg().RemoveWall(row,col,DIRECTION::U);
+            break;
+        default:
+            assert(false);
+    }
+}
+
 /*********************************************************************
  ** Class DFS_MazeGen
  *********************************************************************/
@@ -69,40 +117,9 @@ void DFS_MazeGen::Step() {
     }else{
         if(r_!=0 || c_!= 0)
             history_.push({r_,c_});
-        size_t range = check.size(); // [0~ range)
-        //seed_rand();
-        int index = rand()%range;
-        auto move_direction = check[index];
-        switch (move_direction){
-            case DIRECTION::L: //Remove the wall between the current cell and the chosen cell(!!!the wall do not occupy any cell)
-                map(r_,c_,DIRECTION::L) = 1; // remove current left wall
-                c_--; // run left
-                map(r_,c_,DIRECTION::R) = 1; // right which is origin cell remove wall
-                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::R);
-                break;
-            case DIRECTION::U:
-                map(r_,c_,DIRECTION::U) = 1;
-                r_--;
-                map(r_,c_,DIRECTION::D) = 1;
-                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::D);
-                break;
-            case DIRECTION::R:
-                map(r_,c_,DIRECTION::R) = 1;
-                c_++;
-                map(r_,c_,DIRECTION::L) = 1;
-                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::L);
-                break;
-            case DIRECTION::D:
-                map(r_,c_,DIRECTION::D) = 1;
-                r_++;
-                map(r_,c_,DIRECTION::U) = 1;
-                maze_pr_->MapImg().RemoveWall(r_,c_,DIRECTION::U);
-                break;
-            default:
-                assert(false);
-        }
+        auto move_direction = RandomChoice(check);
+        RemoveWall(r_,c_,(DIRECTION)move_direction);
     }
-
     step_count_++;
 }
 
@@ -124,3 +141,80 @@ const uchar *DFS_MazeGen::MazeImgBits(MazeImgFlag setting) {
 
     return maze_pr_->MapImg().Bits();
 }
+
+
+/*********************************************************************
+ ** Class RandomPrimMazeGen
+ *********************************************************************/
+
+void RandomPrimMazeGen::Reset(int row, int col) {
+    seed_rand();
+    step_count_ = 0;
+    num_rows = row;
+    num_cols = col;
+    r_ = row/2;
+    c_ = col/2;
+    maze_pr_.reset(new S_Maze(row, col));
+    history_.clear();
+    history_.insert({r_,c_});
+}
+
+void RandomPrimMazeGen::Step() {
+    S_Maze& map = *maze_pr_.get();
+    //random choose a candidate cell from the cell set histroy
+    auto cell_loc = RandomChoice(history_);
+    r_ = cell_loc.first; c_ = cell_loc.second;
+    map(r_,c_,4) = 1; // this cell is visited
+    history_.erase({r_,c_});
+
+
+    // if this cell has connect the exist maze(the adjacency maze is visited),
+    // random choose one to remove the wall ,else if this maze is neither visited nor belong to history
+    // (history is a set that contain the maze not be visited), add this cell to history and mark as 2 means the cell
+    // is in history(also can using set method "find" or "count",but this method complex is 1 ,and set method is log)
+    std::vector<DIRECTION> check;
+    if(c_ > 0) { // left check
+        if (map(r_, c_ - 1, 4) == 1) // visited
+            check.push_back(L);
+        else if(map(r_, c_ - 1, 4) == 0){ // is not in the "history" set
+            map(r_, c_ - 1, 4) = 2; //mark as in the "history" set
+            history_.insert({r_,c_ - 1});
+        }
+    }
+
+    if(r_ > 0){ // U
+        if (map(r_ - 1, c_, 4) == 1)
+            check.push_back(U);
+        else if(map(r_ - 1, c_, 4) == 0){
+            map(r_ - 1, c_, 4) = 2;
+            history_.insert({r_-1,c_});
+        }
+    }
+
+    if(c_ < num_cols -1) { // R
+        if(map(r_,c_+1,4) == 1)
+            check.push_back(R);
+        else if(map(r_,c_+1,4) == 0){
+            map(r_,c_+1,4) = 2;
+            history_.insert({r_,c_+1});
+        }
+    }
+
+    if(r_ < num_rows-1){ // D
+        if(map(r_ + 1, c_,4) == 1)
+            check.push_back(D);
+        else if(map(r_ + 1, c_,4) == 0){
+            map(r_ + 1, c_,4) = 2;
+            history_.insert({r_+1, c_});
+        }
+    }
+
+    if(!check.empty()) {
+        auto move_direction = RandomChoice(check);
+        RemoveWall(r_,c_, move_direction);
+    }
+    step_count_++;
+}
+
+
+

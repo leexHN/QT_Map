@@ -5,6 +5,7 @@
 #pragma once
 
 #include <stack>
+#include <set>
 #include "Maze.h"
 
 typedef unsigned char uchar;
@@ -32,24 +33,36 @@ public:
 
     S_Maze& Maze(){ return *maze_pr_;}
 
-    virtual const uchar* MazeImgBits(MazeImgFlag setting) = 0;
+    virtual const uchar* MazeImgBits(MazeImgFlag setting) {
+        return MazeImgBits();
+    };
 
     const uchar* MazeImgBits(){ return MazeImgBits(MAZE_DEFAULT);};
 protected:
     int num_cols,num_rows;
     int step_count_;
     std::shared_ptr<S_Maze> maze_pr_;
+
+    void RemoveWall(int& r, int& c, DIRECTION dir);
 };
 
 
 class AbstractMazeFactory{
 public:
-    virtual ~AbstractMazeFactory() = default;
+    virtual ~AbstractMazeFactory() {
+        DeleteMazeGen();
+    };
     virtual AbstractMazeGen* CreateMazeGen(int row, int col) = 0;
 
-protected:
-    virtual void DeleteMazeGen() = 0;
+private:
+    virtual void DeleteMazeGen() {
+        while (!maze_gen_pr_stack_.empty()) {
+            delete maze_gen_pr_stack_.top();
+            maze_gen_pr_stack_.pop();
+        };
+    }
 
+protected:
     std::stack<AbstractMazeGen*> maze_gen_pr_stack_;
 };
 
@@ -82,6 +95,25 @@ private:
 };
 
 
+class RandomPrimMazeGen: public AbstractMazeGen{
+public:
+    explicit RandomPrimMazeGen(int row, int col):AbstractMazeGen(row,col){
+        Reset(row,col);
+    }
+
+    void Reset(int row, int col) override;
+
+    bool IsFinish() override { return history_.empty();};
+
+    void Step() override;
+
+    void Loop() override {while(!IsFinish()) Step();};
+private:
+
+    std::set<std::pair<int,int>> history_;
+    int r_ = 0,c_ = 0; // current process location
+};
+
 /*********************************************************************
  ** Concrete Factories
  *********************************************************************/
@@ -89,21 +121,23 @@ private:
 class DFS_MazeGenFactory:public AbstractMazeFactory{
 public:
     DFS_MazeGenFactory() = default;
-    ~DFS_MazeGenFactory() override{
-        DeleteMazeGen();
-    };
+    ~DFS_MazeGenFactory() override = default;
 
     AbstractMazeGen* CreateMazeGen(int row, int col)override {
         maze_gen_pr_stack_.push(new DFS_MazeGen(row,col));
         return maze_gen_pr_stack_.top();
     }
 
-private:
-    void DeleteMazeGen() override {
-        while (!maze_gen_pr_stack_.empty()){
-            delete maze_gen_pr_stack_.top();
-            maze_gen_pr_stack_.pop();
-        }
+};
+
+class RandomPrimGenFactory:public AbstractMazeFactory {
+public:
+    RandomPrimGenFactory() = default;
+    ~RandomPrimGenFactory() override = default;
+
+    AbstractMazeGen* CreateMazeGen(int row, int col)override {
+        maze_gen_pr_stack_.push(new RandomPrimMazeGen(row,col));
+        return maze_gen_pr_stack_.top();
     }
 
 };
