@@ -59,12 +59,13 @@ void Exec::MazeProcessThread() {
                 if(print_flag){
                     print_flag = false;
                     flags_.start = false;
-                    maze_gen_->Reset(row_,col_);
-                    win_.ResetIsRun();
 
                     win_.SetTextBrowser("Mapping Finished!!!");
                     win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
                     win_.SetTextBrowser("This Loop Cost Time: " + QString::number(timer_.ElapseMs(),'f',2) + " ms");
+
+                    maze_gen_->Reset(row_,col_);
+                    win_.ResetIsRun();
                 }
         }
         else

@@ -89,8 +89,8 @@ void DFS_MazeGen::Reset(int row, int col) {
     step_count_ = 0;
     num_rows = row;
     num_cols = col;
-    r_ = 0;
-    c_ = 0;
+    r_ = row/2;
+    c_ = col/2;
     maze_pr_.reset(new S_Maze(row, col));
     history_ =  std::stack<std::pair<int,int>>();
     history_.push({r_,c_});
