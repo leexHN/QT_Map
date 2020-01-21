@@ -52,6 +52,7 @@ protected:
     std::shared_ptr<S_Maze> maze_pr_;
 
     void RemoveWall(int& r, int& c, DIRECTION dir);
+    void RemoveWallOnlyMazeVec(int& r, int& c, DIRECTION dir);
 };
 
 
@@ -92,7 +93,7 @@ public:
 
     void Step() override;
 
-    void Loop() override {while(!IsFinish()) Step();};
+    void Loop() override;
 
     const uchar* MazeImgBits(MazeImgFlag setting) override;
 
@@ -102,6 +103,7 @@ private:
     int r_,c_; // current process location
     std::stack<std::pair<int,int>> history_;  // The history is the stack of visited locations (row,col)
     std::stack<std::pair<int,int>> pre_history_;
+    void _Step(bool is_show_animation = true);
 };
 
 
@@ -117,13 +119,13 @@ public:
 
     void Step() override;
 
-    void Loop() override {while(!IsFinish()) Step();};
+    void Loop() override;
 
     MAZE_GENERATOR CurMazeGenRateType() override { return RANDOM_PRIM;}
 private:
-
     std::set<std::pair<int,int>> history_;
     int r_ = 0,c_ = 0; // current process location
+    void _Step(bool is_show_animation = true);
 };
 
 /*********************************************************************

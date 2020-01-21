@@ -79,6 +79,34 @@ void AbstractMazeGen::RemoveWall(int &row, int &col, DIRECTION dir) {
     }
 }
 
+void AbstractMazeGen::RemoveWallOnlyMazeVec(int &row, int &col, DIRECTION dir) {
+    S_Maze& maze = *maze_pr_.get();
+    switch (dir){
+        case DIRECTION::L: //Remove the wall between the current cell and the chosen cell(!!!the wall do not occupy any cell)
+            maze(row, col, DIRECTION::L) = 1; // remove current left wall
+            col--; // run left
+            maze(row, col, DIRECTION::R) = 1; // right which is origin cell remove wall
+            break;
+        case DIRECTION::U:
+            maze(row, col, DIRECTION::U) = 1;
+            row--;
+            maze(row, col, DIRECTION::D) = 1;
+            break;
+        case DIRECTION::R:
+            maze(row, col, DIRECTION::R) = 1;
+            col++;
+            maze(row, col, DIRECTION::L) = 1;
+            break;
+        case DIRECTION::D:
+            maze(row, col, DIRECTION::D) = 1;
+            row++;
+            maze(row, col, DIRECTION::U) = 1;
+            break;
+        default:
+            assert(false);
+    }
+}
+
 /*********************************************************************
  ** Class DFS_MazeGen
  *********************************************************************/
@@ -98,6 +126,36 @@ void DFS_MazeGen::Reset(int row, int col) {
 }
 
 void DFS_MazeGen::Step() {
+    _Step();
+}
+
+const uchar *DFS_MazeGen::MazeImgBits(MazeImgFlag setting) {
+    bool is_show_stack= setting & SHOW_STACK;
+
+    if(is_show_stack){
+        if(pre_history_.size() > history_.size()){ //pop
+            auto temp = pre_history_.top();
+            maze_pr_->MapImg().ChangeSpaceDepth(temp.first, temp.second, 255);
+        }else if(pre_history_.size() < history_.size() && !pre_history_.empty()){ // push
+            uchar base_color = 170, top_color = 50;
+            const auto top = history_.top() , pre_top = pre_history_.top();
+            maze_pr_->MapImg().ChangeSpaceDepth(top.first, top.second, top_color);
+            maze_pr_->MapImg().ChangeSpaceDepth(pre_top.first, pre_top.second, base_color);
+        }
+        pre_history_ = history_;
+    }
+
+    return maze_pr_->MapImg().Bits();
+}
+
+void DFS_MazeGen::Loop() {
+    while(!IsFinish()){
+        _Step(false);
+    }
+    maze_pr_->Convert2D();
+}
+
+void DFS_MazeGen::_Step(bool is_show_animation) {
     S_Maze& map = *maze_pr_.get();
     map(r_, c_, 4) = 1; // is visited
     std::vector<int> check;
@@ -120,28 +178,12 @@ void DFS_MazeGen::Step() {
         if(r_!=0 || c_!= 0)
             history_.push({r_,c_});
         auto move_direction = RandomChoice(check);
-        RemoveWall(r_,c_,(DIRECTION)move_direction);
+        if(is_show_animation)
+            RemoveWall(r_,c_,(DIRECTION)move_direction);
+        else
+            RemoveWallOnlyMazeVec(r_,c_,(DIRECTION)move_direction);
     }
     step_count_++;
-}
-
-const uchar *DFS_MazeGen::MazeImgBits(MazeImgFlag setting) {
-    bool is_show_stack= setting & SHOW_STACK;
-
-    if(is_show_stack){
-        if(pre_history_.size() > history_.size()){ //pop
-            auto temp = pre_history_.top();
-            maze_pr_->MapImg().ChangeSpaceDepth(temp.first, temp.second, 255);
-        }else if(pre_history_.size() < history_.size() && !pre_history_.empty()){ // push
-            uchar base_color = 170, top_color = 50;
-            const auto top = history_.top() , pre_top = pre_history_.top();
-            maze_pr_->MapImg().ChangeSpaceDepth(top.first, top.second, top_color);
-            maze_pr_->MapImg().ChangeSpaceDepth(pre_top.first, pre_top.second, base_color);
-        }
-        pre_history_ = history_;
-    }
-
-    return maze_pr_->MapImg().Bits();
 }
 
 
@@ -162,6 +204,17 @@ void RandomPrimMazeGen::Reset(int row, int col) {
 }
 
 void RandomPrimMazeGen::Step() {
+    _Step();
+}
+
+void RandomPrimMazeGen::Loop() {
+    while(!IsFinish()){
+        _Step(false);
+    }
+    maze_pr_->Convert2D();
+}
+
+void RandomPrimMazeGen::_Step(bool is_show_animation) {
     S_Maze& map = *maze_pr_.get();
     //random choose a candidate cell from the cell set histroy
     auto cell_loc = RandomChoice(history_);
@@ -213,7 +266,10 @@ void RandomPrimMazeGen::Step() {
 
     if(!check.empty()) {
         auto move_direction = RandomChoice(check);
-        RemoveWall(r_,c_, move_direction);
+        if(is_show_animation)
+            RemoveWall(r_,c_,(DIRECTION)move_direction);
+        else
+            RemoveWallOnlyMazeVec(r_,c_,(DIRECTION)move_direction);
     }
     step_count_++;
 }

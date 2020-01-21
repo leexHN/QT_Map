@@ -9,3 +9,4 @@ boost::signals2::signal<void(bool)> G_RunSig;
 boost::signals2::signal<void(bool)> G_IsShowStackSig;
 boost::signals2::signal<void(int)> G_SetDelayTimeSig;
 boost::signals2::signal<void(int)> G_SetMazeGeneratorSig;
+boost::signals2::signal<void(bool)>G_IsAnimation;

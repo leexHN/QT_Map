@@ -29,6 +29,7 @@ ENDIF (CMAKE_SYSTEM_NAME MATCHES "Linux")
 find_package(Qt5 COMPONENTS Widgets REQUIRED)
 
 include_directories(include)
+include_directories(${CMAKE_BINARY_DIR}/${PROJECT_NAME}_autogen)
 
 file(GLOB QT_HEADERS "./include/gui/*.h")
 foreach(file ${QT_HEADERS})

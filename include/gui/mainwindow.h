@@ -56,6 +56,7 @@ private slots:
     void SetMazeGenerator(int type);
     void RunOrPause();
     void Reset();
+    void IsShowAnimation(int state);
 
 signals:
     void StopTimerSig(int timer_id);

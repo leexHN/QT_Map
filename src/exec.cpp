@@ -17,6 +17,7 @@ void Exec::MazeProcessThread() {
             S_Flags new_flags{};
             new_flags.cur_maze_gen = flags_.cur_maze_gen;
             new_flags.run_status = true;
+            new_flags.show_animation = flags_.show_animation;
             flags_ = new_flags;
             ChangeMazeFac(flags_.cur_maze_gen);
             print_flag = true;
@@ -36,6 +37,20 @@ void Exec::MazeProcessThread() {
             win_.ConvertToImg(maze_gen_->MazeImgBits(),
                               (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
             continue;
+        }
+
+        if(flags_.start && !flags_.show_animation){
+            maze_gen_->Loop();
+            win_.ConvertToImg(maze_gen_->MazeImgBits(),
+                              (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
+            flags_.start = false;
+
+            win_.SetTextBrowser("Mapping Finished!!!");
+            win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
+            win_.SetTextBrowser("This Loop Cost Time: " + QString::number(timer_.ElapseMs(),'f',2) + " ms");
+
+            maze_gen_->Reset(row_,col_);
+            win_.ResetIsRun();
         }
 
         if(flags_.start){

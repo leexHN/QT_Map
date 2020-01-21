@@ -11,3 +11,4 @@ extern boost::signals2::signal<void(bool)> G_RunSig;
 extern boost::signals2::signal<void(bool)> G_IsShowStackSig;
 extern boost::signals2::signal<void(int)> G_SetDelayTimeSig;
 extern boost::signals2::signal<void(int)> G_SetMazeGeneratorSig;
+extern boost::signals2::signal<void(bool)>G_IsAnimation;

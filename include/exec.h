@@ -30,6 +30,7 @@ public:
         G_RunSig.connect([this](bool flag){Start(flag);});
         G_SetDelayTimeSig.connect([this](int ms){SetDelayTime(ms);});
         G_SetMazeGeneratorSig.connect([this](int type){ChangeGenerator(type);});
+        G_IsAnimation.connect([this](bool flag){ShowAnimation(flag);});
 
         // maze_factory
         maze_fac_pr_ = std::make_shared<DFS_MazeGenFactory>();
@@ -65,12 +66,15 @@ public:
 
     inline void ChangeGenerator(int type){ flags_.cur_maze_gen = (MAZE_GENERATOR)type;};
 
+    inline void ShowAnimation(bool flag){flags_.show_animation = flag;}
+
 private:
     struct S_Flags{
         bool start = false;// true start false pause
         bool reset_row_col = false;
         bool show_stack = false;
         bool run_status = false;
+        bool show_animation = true;
         MAZE_GENERATOR cur_maze_gen = DFS;
     };
     QApplication app_;

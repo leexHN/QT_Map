@@ -1,5 +1,5 @@
 #include "gui/mainwindow.h"
-#include "gui/ui_mainwindow.h"
+#include "ui_mainwindow.h"
 #include <algorithm>
 #include <iostream>
 #include <QtCore/QDateTime>
@@ -21,6 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->col_spinBox,SIGNAL(valueChanged(int)), this, SLOT(SetCol(int)));
     connect(ui->delay_time_spinBox,SIGNAL(valueChanged(int)),this, SLOT(SetDelayTime(int)));
     connect(ui->show_stack_checkBox,SIGNAL(stateChanged(int)),this,SLOT(ShowStack(int)));
+    connect(ui->animation_checkBox,SIGNAL(stateChanged(int)),this, SLOT(IsShowAnimation(int)));
     connect(ui->maze_gen_comboBox, SIGNAL(currentIndexChanged(int)), this, SLOT(SetMazeGenerator(int)));
 
     connect(ui->r_p_Button,SIGNAL(pressed()), this, SLOT(RunOrPause()));
@@ -135,7 +136,15 @@ void MainWindow::ShowStack(int state){
     else
         SetTextBrowser("Do not Stack In Mapping");
     G_IsShowStackSig(state == Qt::Checked);
-};
+}
+
+void MainWindow::IsShowAnimation(int state) {
+    if(state == Qt::Checked)
+        SetTextBrowser("Show Animation");
+    else
+        SetTextBrowser("Do not Show Animation");
+    G_IsAnimation(state == Qt::Checked);
+}
 
 void MainWindow::SetMazeGenerator(int type) {
     G_SetMazeGeneratorSig(type);
