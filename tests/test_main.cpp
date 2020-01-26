@@ -7,12 +7,12 @@
 #include <gui/mainwindow.h>
 #include <thread>
 #if !defined(_WIN32)
-#include <zconf.h>
 #else
 #include<Windows.h>
 #endif
 #include "Maze.h"
 #include "maze_factory.h"
+#include "FindPath.h"
 
 
 MainWindow * pr_w;
@@ -94,6 +94,60 @@ TEST(S_MAP_IMG_TEST, set_all_space_grey){
         for (size_t j = 0; j < col; ++j)
             img.ChangeSpaceDepth(i,j,128);
     w.ConvertToImg(img.Bits(),img.H(),img.W());
+    SUCCEED();
+}
+
+TEST(S_MAZE_TEST, GetAdjacencyMap){
+    std::thread MapGenTest;
+    auto MapGenTestFunc = [](){
+        MainWindow & w = *pr_w;
+        DFS_MazeGenFactory dfs_maze_fac_;
+        AbstractMazeGen* generator = dfs_maze_fac_.CreateMazeGen(3,3);
+        generator->Loop();
+        w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+
+        auto temp = generator->Maze().GetAdjacencyMap();
+        for (size_t i = 0; i< temp.size();i++){
+            for(size_t j=0; j< temp[i].size(); j++){
+                if(temp[i][j]==1)
+                    std::cout<< "[" << generator->Maze().ID2R_C(i).first<< "," << generator->Maze().ID2R_C(i).second
+                             << "] ------> " <<  "[" << generator->Maze().ID2R_C(j).first <<","<< generator->Maze().ID2R_C(j).second<<"]\n";
+            }
+        }
+        std::cout << "adjacency map:\n";
+        for(auto &i : temp){
+            for(auto j :i)
+                std::cout << (int)j <<",";
+            std::cout<<std::endl;
+        }
+    };
+    MapGenTest = std::thread(MapGenTestFunc);
+    MapGenTest.detach();
+    SUCCEED();
+}
+
+
+TEST(FIND_PATH_TEST, DijkstraFindPath){
+    std::thread MapGenTest;
+    auto MapGenTestFunc = [](){
+        MainWindow & w = *pr_w;
+        DFS_MazeGenFactory dfs_maze_fac_;
+        AbstractMazeGen* generator = dfs_maze_fac_.CreateMazeGen(5,5);
+        generator->Loop();
+        w.ConvertToImg(generator->Maze().MapImg().Bits(),generator->Maze().MapImg().H(),generator->Maze().MapImg().W());
+
+        auto map = generator->Maze().GetAdjacencyMap();
+        DijkstraFindPath findPath(map);
+        while (!findPath.IsFinish())
+            findPath.Step();
+        auto min_path = findPath.MinPath();
+        std::cout<<"\n=============\n";
+        for(auto id: min_path){
+            std::cout << "[" << generator->Maze().ID2R_C(id).first<< "," << generator->Maze().ID2R_C(id).second << "]"<<std::endl;
+        }
+    };
+    MapGenTest = std::thread(MapGenTestFunc);
+    MapGenTest.detach();
     SUCCEED();
 }
 

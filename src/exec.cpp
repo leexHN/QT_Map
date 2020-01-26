@@ -11,7 +11,7 @@ void Exec::ResetMap(int row, int col) {
 }
 
 void Exec::MazeProcessThread() {
-    static bool print_flag = true;
+    bool print_flag = true, is_first_start = true;
     while (flags_.run_status){
         if(flags_.cur_maze_gen != maze_gen_->CurMazeGenRateType()){
             S_Flags new_flags{};
@@ -39,21 +39,18 @@ void Exec::MazeProcessThread() {
             continue;
         }
 
-        if(flags_.start && !flags_.show_animation){
-            maze_gen_->Loop();
-            win_.ConvertToImg(maze_gen_->MazeImgBits(),
-                              (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
-            flags_.start = false;
-
-            win_.SetTextBrowser("Mapping Finished!!!");
-            win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
-            win_.SetTextBrowser("This Loop Cost Time: " + QString::number(timer_.ElapseMs(),'f',2) + " ms");
-
-            maze_gen_->Reset(row_,col_);
-            win_.ResetIsRun();
-        }
-
         if(flags_.start){
+            if(is_first_start) {
+                maze_gen_->Reset(row_, col_);
+                is_first_start = false;
+            }
+            if(!flags_.show_animation){
+                print_flag = true;
+                maze_gen_->Loop();
+                win_.ConvertToImg(maze_gen_->MazeImgBits(),
+                                  (int) maze_gen_->Maze().MapImg().H(), (int) maze_gen_->Maze().MapImg().W());
+            }
+
             if(!maze_gen_->IsFinish()){
                 print_flag = true;
                 maze_gen_->Step();
@@ -73,13 +70,13 @@ void Exec::MazeProcessThread() {
             else
                 if(print_flag){
                     print_flag = false;
+                    is_first_start = true;
                     flags_.start = false;
 
                     win_.SetTextBrowser("Mapping Finished!!!");
                     win_.SetTextBrowser("Mapping cost steps : "+ QString::number(maze_gen_->StepCount()));
                     win_.SetTextBrowser("This Loop Cost Time: " + QString::number(timer_.ElapseMs(),'f',2) + " ms");
 
-                    maze_gen_->Reset(row_,col_);
                     win_.ResetIsRun();
                 }
         }

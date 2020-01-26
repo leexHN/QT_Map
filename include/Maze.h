@@ -14,6 +14,7 @@
 
 typedef unsigned char uchar;
 enum DIRECTION{L=0,U,R,D};
+enum MAP_DIS{LOC=0,ACC,N_ACC};
 
 struct S_MazeIMg{
     explicit S_MazeIMg(unsigned int row, unsigned int col){
@@ -86,6 +87,7 @@ private:
 // map[row, col, (LEFT, UP, RIGHT, DOWN, CHECK_IF_VISITED)]
 struct S_Maze{
     typedef std::string str_t;
+    typedef std::vector<std::vector<uchar>> AdjacencyMapType;
     explicit S_Maze(int row, int col)
     : cross("+"), v_w("|"), h_w("--"), space("  "),
       maze_(row, std::vector<std::vector<uchar>>(col, std::vector<uchar>(5, 0))),
@@ -123,6 +125,10 @@ struct S_Maze{
 
     void Convert2D(); // turn maze_ to img
 
+    std::vector<std::vector<uchar>> GetAdjacencyMap();
+
+    std::pair<size_t ,size_t> ID2R_C(size_t id);
+
     std::vector<std::vector<std::vector<uchar>>> &Map(){ return maze_;}
     const std::vector<std::vector<std::string>> &MapStr(){return map_2d_;};
 private:
@@ -140,6 +146,14 @@ private:
     static inline bool IsEven(T num){
         return num%2==0;
     }
+
+    inline size_t R_C2ID(size_t row, size_t col){
+        if(row < 0 || col < 0 )
+            throw std::invalid_argument("index out of range!!!");
+        return maze_[0].size()*row+col;
+    }
+
+    void ChangeAdjacencyMapConnect(size_t row, size_t col, DIRECTION dir, AdjacencyMapType &map);
 
     friend std::ostream& operator << (std::ostream &os, const S_Maze& rhs);
 };

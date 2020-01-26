@@ -163,4 +163,67 @@ std::string S_Maze::Convert2DStr() const {
     return ss.str();
 }
 
+std::vector<std::vector<uchar>> S_Maze::GetAdjacencyMap() {
+    size_t num_rows = maze_.size(), num_cols = maze_[0].size();
+    // map : distance == 2(N_ACC) means is block; distance == means access; distance == 0 same dot
+    AdjacencyMapType map(num_rows* num_cols, std::vector<uchar>(num_rows* num_cols,N_ACC));
+    // according row to get id:(0,0) id 0; (0,1) id 1; (1,0) id col; (m,n) id col*m+n
+    std::vector<std::future<void>> fu_vec;
+    for(size_t i = 0; i < num_rows; i++){
+        auto func = [i,&map,this](){
+            for(size_t j = 0; j < maze_[0].size(); j++){
+                auto map_cell = maze_[i][j];
+                if(map_cell[DIRECTION::L] == 1)
+                    ChangeAdjacencyMapConnect(i, j, DIRECTION::L, map);
+                if(map_cell[DIRECTION::U] == 1)
+                    ChangeAdjacencyMapConnect(i, j, DIRECTION::U, map);
+                if(map_cell[DIRECTION::R] == 1)
+                    ChangeAdjacencyMapConnect(i, j, DIRECTION::R, map);
+                if(map_cell[DIRECTION::D] == 1)
+                    ChangeAdjacencyMapConnect(i, j, DIRECTION::D, map);
+            }
+        };
+        fu_vec.push_back(std::async(std::launch::async, func));
+    }
+
+    for(size_t i = 0; i < map.size(); i++)
+        map[i][i] = LOC;
+
+    for(const auto & fu:fu_vec){
+        fu.wait();
+    }
+
+    return map;
+}
+
+std::pair<size_t, size_t> S_Maze::ID2R_C(size_t id) {
+    size_t num_rows = maze_.size(), num_cols = maze_[0].size();
+    size_t col = id % num_cols;
+    size_t row = id / num_cols;
+    return {row,col};
+}
+
+void S_Maze::ChangeAdjacencyMapConnect(size_t row, size_t col, DIRECTION dir, AdjacencyMapType &map) {
+    size_t cur_id = R_C2ID(row,col);
+    size_t next_id;
+    switch (dir){
+        case L:
+            next_id = R_C2ID(row,col-1);
+            break;
+        case U:
+            next_id = R_C2ID(row - 1, col);
+            break;
+        case R:
+            next_id = R_C2ID(row,col+1);
+            break;
+        case D:
+            next_id = R_C2ID(row + 1,col);
+            break;
+        default:
+            assert(false);
+    }
+    map[cur_id][next_id] = ACC;
+    map[next_id][cur_id] = ACC;
+}
+
 
